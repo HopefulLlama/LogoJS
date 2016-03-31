@@ -1,0 +1,1 @@
+window.turtle = new Turtle()
