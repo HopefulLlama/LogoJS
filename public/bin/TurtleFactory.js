@@ -39,6 +39,10 @@
 
         Turtle.prototype.rotate = function(degree) {
           this.angle += degree;
+          this.angle = this.angle % 360;
+          if (this.angle < 0) {
+            this.angle += 360;
+          }
           return this;
         };
 

@@ -15,6 +15,13 @@
           return this.domElement.height = this.domElement.clientHeight;
         };
 
+        Canvas.prototype.drawLine = function(journey) {
+          this.context.beginPath();
+          this.context.moveTo(journey.start.x, journey.start.y);
+          this.context.lineTo(journey.end.x, journey.end.y);
+          return this.context.stroke();
+        };
+
         return Canvas;
 
       })();

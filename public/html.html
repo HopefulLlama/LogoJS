@@ -1,7 +1,11 @@
 <html>
 	<head>
-		<link rel="stylesheet" type="text/css" href="css.css">
+		<link rel="stylesheet" type="text/css" href="../bower_components/bootstrap/dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../bower_components/bootstrap/dist/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="css.css" />
 
+		<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 		<script src="../bower_components/angular/angular.min.js"></script>
 		
 		<script src="bin/LogoApp.js"></script>
@@ -10,6 +14,12 @@
 		<script src="bin/LogoController.js"></script>
 	</head>
 	<body ng-app="LogoApp" ng-controller="LogoController">
-		<canvas id="canvas"></canvas>
+		<div class="col-xs-8">
+			<canvas id="canvas" class="col-xs-8"></canvas>
+		</div>
+		<div id="submit-area" class="col-xs-4">
+			<textarea id="input" class="form-control" ng-model="input"></textarea>
+			<button id="submit" class="btn btn-primary" ng-click="executeCommands(input)">Submit</button>
+		</div>
 	</body>
 </html>

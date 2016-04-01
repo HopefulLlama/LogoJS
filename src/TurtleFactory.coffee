@@ -23,5 +23,8 @@ logoApp.factory('TurtleFactory', [->
 			}
 		rotate: (degree) ->
 			@angle += degree
+			@angle = @angle % 360 
+			if @angle < 0 then @angle += 360
+
 			return @
 ])
