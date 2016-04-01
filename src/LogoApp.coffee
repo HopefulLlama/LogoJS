@@ -1,0 +1,1 @@
+window.logoApp = angular.module('LogoApp', [])

@@ -1,8 +1,15 @@
 <html>
 	<head>
-		<script src="bin/Turtle.js"></script>
-		<script src="bin/Controller.js"></script>
+		<link rel="stylesheet" type="text/css" href="css.css">
+
+		<script src="../bower_components/angular/angular.min.js"></script>
+		
+		<script src="bin/LogoApp.js"></script>
+		<script src="bin/TurtleFactory.js"></script>
+		<script src="bin/CanvasFactory.js"></script>
+		<script src="bin/LogoController.js"></script>
 	</head>
-	<body>
+	<body ng-app="LogoApp" ng-controller="LogoController">
+		<canvas id="canvas"></canvas>
 	</body>
 </html>
