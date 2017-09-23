@@ -4,7 +4,7 @@ const jasmine = require('gulp-jasmine');
 const jshint = require('gulp-jshint');
 const pump = require('pump');
 const rename = require('gulp-rename');
-const uglify = require('gulp-uglify');
+const uglify = require('gulp-uglify-es').default;
 
 const OUTPUT_FILE = 'logo.js';
 const OUTPUT_DIR = 'public/bin';

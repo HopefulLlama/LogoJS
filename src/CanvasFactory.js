@@ -1,27 +1,25 @@
 angular.module('LogoApp').factory('CanvasFactory', [
   function() {
-    var Canvas;
-    return Canvas = (function() {
-      function Canvas(canvasId) {
-        this.domElement = document.getElementById(canvasId);
+    class Canvas {
+      constructor(id) {
+        this.domElement = document.getElementById(id);
         this.context = this.domElement.getContext("2d");
-        this.resize();
+        this.resize();        
       }
 
-      Canvas.prototype.resize = function() {
+      resize() {
         this.domElement.width = this.domElement.clientWidth;
-        return this.domElement.height = this.domElement.clientHeight;
-      };
+        this.domElement.height = this.domElement.clientHeight;
+      }
 
-      Canvas.prototype.drawLine = function(journey) {
+      drawLine(journey) {
         this.context.beginPath();
         this.context.moveTo(journey.start.x, journey.start.y);
         this.context.lineTo(journey.end.x, journey.end.y);
-        return this.context.stroke();
-      };
+        this.context.stroke();
+      }
+    }
 
-      return Canvas;
-
-    })();
+    return Canvas;
   }
 ]);

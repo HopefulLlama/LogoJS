@@ -1,51 +1,32 @@
 angular.module('LogoApp').factory('TurtleFactory', [
   function() {
-    var Turtle;
-    return Turtle = (function() {
-      function Turtle(x, y, angle) {
-        if (x == null) {
-          x = 0;
-        }
-        if (y == null) {
-          y = 0;
-        }
-        this.angle = angle != null ? angle : 180;
-        this.position = {
-          x: x,
-          y: y
-        };
+    class Turtle {
+      constructor(position, angle) {
+        this.position = position;
+        this.angle = angle;
       }
 
-      Turtle.prototype.move = function(distance) {
-        var endPosition, radians, startPosition;
-        startPosition = {
-          x: this.position.x,
-          y: this.position.y
-        };
-        radians = Math.PI * this.angle / 180;
-        this.position.x = this.position.x + (distance * Math.sin(radians));
-        this.position.y = this.position.y + (distance * Math.cos(radians));
-        endPosition = {
-          x: this.position.x,
-          y: this.position.y
-        };
-        return {
-          start: startPosition,
-          end: endPosition
-        };
-      };
+      move(distance) {
+        let start = angular.copy(this.position);
 
-      Turtle.prototype.rotate = function(degree) {
+        let radians = Math.PI * this.angle / 180;
+
+        this.position.x += (distance * Math.sin(radians));
+        this.position.y += (distance * Math.cos(radians));
+        
+        return {start, end: this.position};
+      }
+
+      rotate(degree) {
         this.angle += degree;
         this.angle = this.angle % 360;
         if (this.angle < 0) {
           this.angle += 360;
         }
         return this;
-      };
+      }
+    }
 
-      return Turtle;
-
-    })();
+    return Turtle;
   }
 ]);
