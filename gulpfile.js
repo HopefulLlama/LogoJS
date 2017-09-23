@@ -4,14 +4,15 @@ const jasmine = require('gulp-jasmine');
 const jshint = require('gulp-jshint');
 const pump = require('pump');
 const rename = require('gulp-rename');
+const sequence = require('gulp-sequence');
 const uglify = require('gulp-uglify-es').default;
 
 const OUTPUT_FILE = 'logo.js';
 const OUTPUT_DIR = 'public/bin';
 
-gulp.task('default', ['test', 'build']);
-gulp.task('test', ['lint', 'unit-test']);
-gulp.task('build', ['concat', 'compress']);
+gulp.task('default', sequence('test', 'build'));
+gulp.task('test', sequence('lint', 'unit-test'));
+gulp.task('build', sequence('concat', 'compress'));
 
 gulp.task('compress', (done) => {
   pump([
