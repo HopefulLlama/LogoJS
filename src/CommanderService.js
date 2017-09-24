@@ -1,25 +1,45 @@
-angular.module('LogoApp').service('CommanderService', [function() {
+angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'ParameterService', function(CommandFactory, ParameterService) {
   let turtle, canvas;
 
-  function forward(distance) {
+  let forward = new CommandFactory([ParameterService.FINITE_NUMBER], (distance) => {
     let journey = turtle.move(distance);
     canvas.drawLine(journey);
-  }
+  });
 
-  function back(distance) {
+  let back = new CommandFactory([ParameterService.FINITE_NUMBER], (distance) => {
     let journey = turtle.move(0 - distance);
     canvas.drawLine(journey);
-  }
+  });
 
-  function left(degree) {
+  let left = new CommandFactory([ParameterService.FINITE_NUMBER], (degree) => {
     turtle.rotate(degree);
-  }
+  });
 
-  function right(degree) {
+  let right = new CommandFactory([ParameterService.FINITE_NUMBER], (degree) => {
     turtle.rotate(0 - degree);
-  }
+  });
 
   let commands = {forward, back, left, right};
+
+  function tokenize(input) {
+    return input.split("\n").join(" ").split(" ");
+  }
+
+  function generateTurtleFunctions(tokens) {
+    let functions = [];
+
+    while(tokens.length > 0) {
+      let command = commands[tokens.shift()];
+      if(command !== undefined) {
+        let parameters = tokens.splice(0, command.parameterSchema.length);
+        functions.push(command.createFunction(parameters));
+      } else {
+        throw new Error();        
+      }
+    }
+
+    return functions;
+  }
 
   this.setTurtle = (t) => {
     turtle = t;
@@ -32,15 +52,10 @@ angular.module('LogoApp').service('CommanderService', [function() {
   };
 
   this.executeCommands = (input) => {
-    let words = input.split("\n").join(" ").split(" ");
-    let results = [];
-
-    for(let i = 0; i < words.length; i++) {
-      if (commands[words[i]] !== undefined) {
-        commands[words[i]](parseInt(words[i+1], 10));
-        i++;
-      } 
-    }
+    generateTurtleFunctions(tokenize(input))
+    .forEach((func) => {
+      func();
+    });
 
     return this;
   };
