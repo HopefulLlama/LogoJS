@@ -24,7 +24,7 @@ gulp.task('compress', (done) => {
 });
 
 gulp.task('concat', () => {
-  return gulp.src(['src/LogoApp.js', 'src/TurtleFactory.js', 'src/CanvasFactory.js', 'src/LogoController.js'])
+  return gulp.src(['src/LogoApp.js', 'src/TurtleFactory.js', 'src/CanvasFactory.js', 'src/CommanderService.js', 'src/LogoController.js'])
   .pipe(concat(OUTPUT_FILE))
   .pipe(gulp.dest(OUTPUT_DIR));
 });
