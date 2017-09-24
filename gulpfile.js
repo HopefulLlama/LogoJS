@@ -30,7 +30,8 @@ gulp.task('concat', () => {
     'src/CanvasFactory.js', 
     'src/ParameterService.js', 
     'src/CommandFactory.js', 
-    'src/CommanderService.js', 
+    'src/LoopFactory.js',
+    'src/CommanderService.js',
     'src/LogoController.js'
   ])
   .pipe(concat(OUTPUT_FILE))

@@ -1,16 +1,18 @@
 angular.module('LogoApp').factory('CommandFactory', [function() {
   class Command {
-    constructor(parameterSchema, execution) {
+    constructor(parameterSchema, execute) {
       this.parameterSchema = parameterSchema;
-      this.execution = execution;
+      this.execute = execute;
     }
 
-    createFunction(parameters) {
+    createExecution(parameters) {
       if(this.parameterSchema.every((item, index) => {
         return item(parameters[index]);
       })) {
-        return () => {
-          this.execution(...parameters);
+        return {
+          execute: () => {
+            this.execute(...parameters);
+          }
         };
       } else {
         throw new Error();

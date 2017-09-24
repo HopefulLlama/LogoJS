@@ -1,5 +1,5 @@
-angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'ParameterService', function(CommandFactory, ParameterService) {
-  let turtle, canvas;
+angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'CommandFactory', 'ParameterService', 'LoopFactory', function(CommandFactory, ControlFactory, ParameterService, LoopFactory) {
+  let turtle, canvas, currentLoop, masterLoop;
 
   let forward = new CommandFactory([ParameterService.FINITE_NUMBER], (distance) => {
     let journey = turtle.move(distance);
@@ -21,24 +21,44 @@ angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'Parame
 
   let commands = {forward, back, left, right};
 
+  let loop = new CommandFactory([ParameterService.FINITE_NUMBER], (frequency) => {
+    let newLoop = new LoopFactory(currentLoop, frequency);
+    currentLoop.executions.push(newLoop);
+    currentLoop = newLoop;
+  });
+
+  let endloop = new CommandFactory([], () => {
+    currentLoop = currentLoop.parent;
+  });
+
+  let controls = {loop, endloop};
+
+  function instantiateLoops() {
+    currentLoop = new LoopFactory(null, 1);
+    masterLoop = currentLoop; 
+  }
+
   function tokenize(input) {
     return input.split("\n").join(" ").split(" ");
   }
 
-  function generateTurtleFunctions(tokens) {
-    let functions = [];
-
+  function generateTurtleExecutions(tokens) {
     while(tokens.length > 0) {
-      let command = commands[tokens.shift()];
-      if(command !== undefined) {
+      let word = tokens.shift();
+
+      let control = controls[word];
+      let command = commands[word];
+
+      if(control !== undefined) {
+        let parameters = tokens.splice(0, control.parameterSchema.length);
+        control.createExecution(parameters).execute();
+      } else if(command !== undefined) {
         let parameters = tokens.splice(0, command.parameterSchema.length);
-        functions.push(command.createFunction(parameters));
+        currentLoop.executions.push(command.createExecution(parameters));
       } else {
-        throw new Error();        
+        throw new Error(`Control or Command not found: ${word}`);        
       }
     }
-
-    return functions;
   }
 
   this.setTurtle = (t) => {
@@ -52,11 +72,13 @@ angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'Parame
   };
 
   this.executeCommands = (input) => {
-    generateTurtleFunctions(tokenize(input))
-    .forEach((func) => {
-      func();
-    });
+    instantiateLoops();
+    generateTurtleExecutions(tokenize(input));
 
-    return this;
+    if(currentLoop === masterLoop) {
+      masterLoop.execute();
+    } else {
+      throw new Error('Unclosed loop defined');
+    }
   };
 }]);
