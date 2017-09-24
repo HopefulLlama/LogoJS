@@ -7,6 +7,10 @@ angular.module('LogoApp').factory('CanvasFactory', [
         this.resize();        
       }
 
+      clear() {
+        this.context.clearRect(0, 0, this.domElement.width, this.domElement.height);
+      }
+
       resize() {
         this.domElement.width = this.domElement.clientWidth;
         this.domElement.height = this.domElement.clientHeight;
