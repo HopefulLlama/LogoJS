@@ -1,5 +1,5 @@
-angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'CommandFactory', 'ParameterService', 'LoopFactory', function(CommandFactory, ControlFactory, ParameterService, LoopFactory) {
-  let turtle, canvas, currentLoop, masterLoop;
+angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'CommandFactory', 'ParameterService', 'RepeatFactory', function(CommandFactory, ControlFactory, ParameterService, RepeatFactory) {
+  let turtle, canvas, currentRepeat, masterRepeat;
 
   let forward = new CommandFactory([ParameterService.FINITE_NUMBER], (distance) => {
     let journey = turtle.move(distance);
@@ -21,21 +21,21 @@ angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'Comman
 
   let commands = {forward, back, left, right};
 
-  let loop = new CommandFactory([ParameterService.FINITE_NUMBER], (frequency) => {
-    let newLoop = new LoopFactory(currentLoop, frequency);
-    currentLoop.executions.push(newLoop);
-    currentLoop = newLoop;
+  let repeat = new CommandFactory([ParameterService.FINITE_NUMBER], (frequency) => {
+    let newRepeat = new RepeatFactory(currentRepeat, frequency);
+    currentRepeat.executions.push(newRepeat);
+    currentRepeat = newRepeat;
   });
 
-  let endloop = new CommandFactory([], () => {
-    currentLoop = currentLoop.parent;
+  let endrepeat = new CommandFactory([], () => {
+    currentRepeat = currentRepeat.parent;
   });
 
-  let controls = {loop, endloop};
+  let controls = {repeat, endrepeat};
 
   function instantiateLoops() {
-    currentLoop = new LoopFactory(null, 1);
-    masterLoop = currentLoop; 
+    currentRepeat = new RepeatFactory(null, 1);
+    masterRepeat = currentRepeat; 
   }
 
   function tokenize(input) {
@@ -54,7 +54,7 @@ angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'Comman
         control.createExecution(parameters).execute();
       } else if(command !== undefined) {
         let parameters = tokens.splice(0, command.parameterSchema.length);
-        currentLoop.executions.push(command.createExecution(parameters));
+        currentRepeat.executions.push(command.createExecution(parameters));
       } else {
         throw new Error(`Control or Command not found: ${word}`);        
       }
@@ -75,8 +75,8 @@ angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'Comman
     instantiateLoops();
     generateTurtleExecutions(tokenize(input));
 
-    if(currentLoop === masterLoop) {
-      masterLoop.execute();
+    if(currentRepeat === masterRepeat) {
+      masterRepeat.execute();
     } else {
       throw new Error('Unclosed loop defined');
     }

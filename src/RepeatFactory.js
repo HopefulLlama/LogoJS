@@ -1,5 +1,5 @@
-angular.module('LogoApp').factory('LoopFactory', [function() {
-	class Loop {
+angular.module('LogoApp').factory('RepeatFactory', [function() {
+	class Repeat {
 		constructor(parent, frequency) {
 			this.parent = parent;
 			this.frequency = frequency;
@@ -15,5 +15,5 @@ angular.module('LogoApp').factory('LoopFactory', [function() {
 		}
 	}
 
-	return Loop;
+	return Repeat;
 }]);
