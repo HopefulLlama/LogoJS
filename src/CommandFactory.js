@@ -5,13 +5,17 @@ angular.module('LogoApp').factory('CommandFactory', [function() {
       this.execute = execute;
     }
 
-    createExecution(parameters) {
-      if(this.parameterSchema.every((item, index) => {
+    valid(parameters) {
+      return this.parameterSchema.every((item, index) => {
         return item(parameters[index]);
-      })) {
+      });
+    }
+
+    createExecution(parameters) {
+      if(this.valid(parameters)) {
         return {
           execute: () => {
-            this.execute(...parameters);
+            return this.execute(...parameters);
           }
         };
       } else {

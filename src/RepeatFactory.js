@@ -1,19 +1,33 @@
 angular.module('LogoApp').factory('RepeatFactory', [function() {
-	class Repeat {
-		constructor(parent, frequency) {
-			this.parent = parent;
-			this.frequency = frequency;
-			this.executions = [];
-		}
+  class Repeat {
+    constructor(parent, frequency) {
+      this.parent = parent;
+      this.frequency = frequency;
+      this.executions = [];
+    }
 
-		execute() {
-			for(let i = 0; i < this.frequency; i++) {
-				this.executions.forEach((execution) => {
-					execution.execute();
-				});
-			}
-		}
-	}
+    execute() {
+      let journey = [];
 
-	return Repeat;
+      /* jshint ignore:start */
+      for(let i = 0; i < this.frequency; i++) {
+        journey = this.executions.reduce((accumulator, execution) => {
+          let partial = execution.execute();
+
+          if(Array.isArray(partial)) {
+            accumulator = accumulator.concat(partial);
+          } else {
+            accumulator.push(partial);
+          }
+
+          return accumulator;
+        }, journey);
+      }
+
+      return journey;
+      /* jshint ignore:end */
+    }
+  }
+
+  return Repeat;
 }]);

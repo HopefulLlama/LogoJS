@@ -1,29 +1,36 @@
-angular.module('LogoApp').factory('TurtleFactory', [
-  function() {
+angular.module('LogoApp').factory('TurtleFactory', ['PositionFactory', 
+  function(PositionFactory) {
     class Turtle {
-      constructor(position, angle) {
+      constructor(position) {
         this.position = position;
-        this.angle = angle;
       }
 
       move(distance) {
-        let start = angular.copy(this.position);
+        let radians = Math.PI * this.position.angle / 180;
 
-        let radians = Math.PI * this.angle / 180;
-
-        this.position.x += (distance * Math.sin(radians));
-        this.position.y += (distance * Math.cos(radians));
+        this.position = new PositionFactory(
+          this.position.x + (distance * Math.sin(radians)),
+          this.position.y + (distance * Math.cos(radians)),
+          this.position.angle
+        );
         
-        return {start, end: this.position};
+        return this.position;
       }
 
       rotate(degree) {
-        this.angle += degree;
-        this.angle = this.angle % 360;
-        if (this.angle < 0) {
-          this.angle += 360;
+        let angle = this.position.angle + degree;
+        angle = angle % 360;
+        if (angle < 0) {
+          angle += 360;
         }
-        return this;
+
+        this.position = new PositionFactory(
+          this.position.x,
+          this.position.y,
+          angle
+        );
+
+        return this.position;
       }
     }
 

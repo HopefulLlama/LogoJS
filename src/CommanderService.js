@@ -2,21 +2,19 @@ angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'Comman
   let turtle, canvas, currentRepeat, masterRepeat;
 
   let forward = new CommandFactory([ParameterService.FINITE_NUMBER], (distance) => {
-    let journey = turtle.move(distance);
-    canvas.drawLine(journey);
+    return turtle.move(distance);
   });
 
   let back = new CommandFactory([ParameterService.FINITE_NUMBER], (distance) => {
-    let journey = turtle.move(0 - distance);
-    canvas.drawLine(journey);
+    return turtle.move(0 - distance);
   });
 
   let left = new CommandFactory([ParameterService.FINITE_NUMBER], (degree) => {
-    turtle.rotate(degree);
+    return turtle.rotate(degree);
   });
 
   let right = new CommandFactory([ParameterService.FINITE_NUMBER], (degree) => {
-    turtle.rotate(0 - degree);
+    return turtle.rotate(0 - degree);
   });
 
   let commands = {forward, back, left, right};
@@ -28,6 +26,9 @@ angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'Comman
   });
 
   let endrepeat = new CommandFactory([], () => {
+    if(currentRepeat.parent === null) {
+      throw new Error('endrepeat called without matching repeat');
+    }
     currentRepeat = currentRepeat.parent;
   });
 
@@ -75,10 +76,12 @@ angular.module('LogoApp').service('CommanderService', ['CommandFactory', 'Comman
     instantiateLoops();
     generateTurtleExecutions(tokenize(input));
 
+    let journey = [turtle.position];
+
     if(currentRepeat === masterRepeat) {
-      masterRepeat.execute();
+      return journey.concat(masterRepeat.execute());
     } else {
-      throw new Error('Unclosed loop defined');
+      throw new Error('Unclosed repeat defined');
     }
   };
 }]);
