@@ -67,6 +67,10 @@ function generateTurtleExecutions(tokens) {
   }
 }
 
+function reset() {
+  turtle = undefined;
+}
+
 function setPosition(position) {
   turtle = new Turtle(new Position(
     position.x,
@@ -74,6 +78,14 @@ function setPosition(position) {
     position.angle
   ));
   return this;
+}
+
+function getPosition() {
+	if(turtle !== undefined) {
+		return turtle.position;
+	} else {
+		return null;
+	}
 }
 
 function execute(input) {
@@ -92,7 +104,7 @@ function execute(input) {
     throw new Error('Unclosed repeat defined');
   }
 
-  turtle = undefined;
+  reset();
 }
 
-export default {setPosition, execute};
+export default {reset, setPosition, getPosition, execute};

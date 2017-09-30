@@ -73,6 +73,11 @@ class Position {
   constructor(x, y, angle) {
     this.x = x;
     this.y = y;
+    
+    angle = angle % 360;
+    if (angle < 0) {
+      angle += 360;
+    }
     this.angle = angle;
   }
 }
@@ -159,6 +164,10 @@ function generateTurtleExecutions(tokens) {
   }
 }
 
+function reset() {
+  turtle = undefined;
+}
+
 function setPosition(position) {
   turtle = new __WEBPACK_IMPORTED_MODULE_3__Turtle__["a" /* default */](new __WEBPACK_IMPORTED_MODULE_4__Position__["a" /* default */](
     position.x,
@@ -166,6 +175,14 @@ function setPosition(position) {
     position.angle
   ));
   return this;
+}
+
+function getPosition() {
+	if(turtle !== undefined) {
+		return turtle.position;
+	} else {
+		return null;
+	}
 }
 
 function execute(input) {
@@ -184,10 +201,10 @@ function execute(input) {
     throw new Error('Unclosed repeat defined');
   }
 
-  turtle = undefined;
+  reset();
 }
 
-/* harmony default export */ __webpack_exports__["default"] = ({setPosition, execute});
+/* harmony default export */ __webpack_exports__["default"] = ({reset, setPosition, getPosition, execute});
 
 /***/ }),
 /* 2 */
@@ -201,15 +218,20 @@ class Command {
   }
 
   valid(parameters) {
-    return this.parameterSchema.every((item, index) => {
-      return item(parameters[index]);
-    });
+    return (this.parameterSchema.length === parameters.length && 
+      this.parameterSchema.every((item, index) => {
+        return item.validate(parameters[index]);
+      })
+    );
   }
 
   createExecution(parameters) {
     if(this.valid(parameters)) {
       return {
         execute: () => {
+          parameters = parameters.map((parameter, index) => {
+            return this.parameterSchema[index].transform(parameter);
+          });
           return this.execute(...parameters);
         }
       };
@@ -227,10 +249,19 @@ class Command {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  FINITE_NUMBER: (parameter) => {
-    return isFinite(parameter);
+class Parameter {
+  constructor(validate, transform) {
+    this.validate = validate;
+    this.transform = transform;
   }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  FINITE_NUMBER: new Parameter((parameter) => {
+    return isFinite(parameter);
+  }, (parameter) => {
+    return parseInt(parameter, 10);
+  })
 });
 
 /***/ }),
@@ -297,10 +328,6 @@ class Turtle {
 
   rotate(degree) {
     let angle = this.position.angle + degree;
-    angle = angle % 360;
-    if (angle < 0) {
-      angle += 360;
-    }
 
     this.position = new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](
       this.position.x,

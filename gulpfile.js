@@ -3,8 +3,8 @@ const fs = require('fs');
 
 const concat = require('gulp-concat');
 const gulp = require('gulp');
-const jasmine = require('gulp-jasmine');
 const jshint = require('gulp-jshint');
+const karma = require('gulp-karma-runner');
 const pump = require('pump');
 const rename = require('gulp-rename');
 const sequence = require('gulp-sequence');
@@ -17,11 +17,11 @@ function copyFile(srcFile, destFile) {
   fs.writeFileSync(destFile, fs.readFileSync(srcFile));
 }
 
-gulp.task('default', sequence('test', 'build'));
-gulp.task('test', sequence('lint', 'unit-test'));
-gulp.task('build', sequence('webpack', 'concat', 'compress-logo-app', 'compress-logo-js', 'copy'));
+gulp.task('default', sequence('test'));
+gulp.task('test', sequence('build', 'unit-test'));
+gulp.task('build', sequence('lint', 'webpack', 'concat', 'compress-logo-app', 'compress-logo-js', 'copy'));
 
-gulp.task('copy', (done) => {
+gulp.task('copy', () => {
   copyFile('dist/Logo.js', `${OUTPUT_DIR}/Logo.js`);
   copyFile('dist/Logo.min.js', `${OUTPUT_DIR}/Logo.min.js`);
 });
@@ -70,6 +70,15 @@ gulp.task('lint', () => {
 });
 
 gulp.task('unit-test', () => {
-  return gulp.src('spec/unit/**/*.js')
-  .pipe(jasmine());
+  return gulp.src([
+    'dist/Logo.js',
+    'spec/unit/**/*Spec.js'
+  ], {'read': false})
+  .pipe(
+    karma.server({
+      'singleRun': true,
+      'frameworks': ['jasmine'],
+      'browsers': ['Chrome']
+    })
+  );
 });

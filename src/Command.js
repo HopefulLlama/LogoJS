@@ -5,15 +5,20 @@ export default class Command {
   }
 
   valid(parameters) {
-    return this.parameterSchema.every((item, index) => {
-      return item(parameters[index]);
-    });
+    return (this.parameterSchema.length === parameters.length && 
+      this.parameterSchema.every((item, index) => {
+        return item.validate(parameters[index]);
+      })
+    );
   }
 
   createExecution(parameters) {
     if(this.valid(parameters)) {
       return {
         execute: () => {
+          parameters = parameters.map((parameter, index) => {
+            return this.parameterSchema[index].transform(parameter);
+          });
           return this.execute(...parameters);
         }
       };

@@ -19,10 +19,6 @@ export default class Turtle {
 
   rotate(degree) {
     let angle = this.position.angle + degree;
-    angle = angle % 360;
-    if (angle < 0) {
-      angle += 360;
-    }
 
     this.position = new Position(
       this.position.x,
