@@ -9,6 +9,8 @@ const pump = require('pump');
 const rename = require('gulp-rename');
 const sequence = require('gulp-sequence');
 const uglify = require('gulp-uglify-es').default;
+const gulpWebpack = require('gulp-webpack');
+const webpack = require('webpack');
 
 const OUTPUT_FILE = 'LogoApp.js';
 const OUTPUT_DIR = 'public/bin';
@@ -27,8 +29,16 @@ gulp.task('copy', () => {
   copyFile('dist/Logo.min.js', `${OUTPUT_DIR}/Logo.min.js`);
 });
 
-gulp.task('webpack', (done) => {
-  childProcess.exec('webpack', done);
+gulp.task('webpack', () => {
+  return gulp.src('src/Logo.js')
+  .pipe(gulpWebpack({
+    output: {
+      filename: 'Logo.js',
+      library: 'LogoJS',
+      libraryExport: 'default'
+    }
+  }, webpack))
+  .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('compress-logo-app', (done) => {
