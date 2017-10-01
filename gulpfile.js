@@ -19,7 +19,8 @@ function copyFile(srcFile, destFile) {
 
 gulp.task('default', sequence('test'));
 gulp.task('test', sequence('build', 'unit-test'));
-gulp.task('build', sequence('lint', 'webpack', 'concat', 'compress-logo-app', 'compress-logo-js', 'copy'));
+gulp.task('build', sequence('lint', 'webpack', 'compress-logo-js', 'copy'));
+gulp.task('build-app', sequence('lint-app', 'concat', 'compress-logo-app'));
 
 gulp.task('copy', () => {
   copyFile('dist/Logo.js', `${OUTPUT_DIR}/Logo.js`);
@@ -61,8 +62,16 @@ gulp.task('concat', () => {
 gulp.task('lint', () => {
   return gulp.src([
     'src/**/*.js',
-    'logo-app/**/*.js',
     'spec/**/*.js',
+  ])
+  .pipe(jshint())
+  .pipe(jshint.reporter('default'))
+  .pipe(jshint.reporter('fail'));
+});
+
+gulp.task('lint-app', () => {
+  return gulp.src([
+    'logo-app/**/*.js'
   ])
   .pipe(jshint())
   .pipe(jshint.reporter('default'))
