@@ -1,10 +1,10 @@
 const childProcess = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 const concat = require('gulp-concat');
 const gulp = require('gulp');
 const jshint = require('gulp-jshint');
-const karma = require('gulp-karma-runner');
 const pump = require('pump');
 const rename = require('gulp-rename');
 const sequence = require('gulp-sequence');
@@ -89,15 +89,6 @@ gulp.task('lint-app', () => {
 });
 
 gulp.task('unit-test', () => {
-  return gulp.src([
-    'dist/Logo.js',
-    'spec/unit/**/*Spec.js'
-  ], {'read': false})
-  .pipe(
-    karma.server({
-      'singleRun': true,
-      'frameworks': ['jasmine'],
-      'browsers': ['Chrome']
-    })
-  );
+  let karma = path.join('node_modules', 'karma', 'bin', 'karma');
+  childProcess.execSync(`node ${karma} start --single-run`, {stdio: [0,1,2]});
 });
