@@ -10,5 +10,10 @@ export default {
     return isFinite(parameter);
   }, (parameter) => {
     return parseInt(parameter, 10);
+  }),
+  UP_DOWN: new Parameter((parameter) => {
+    return parameter === 'up' || parameter === 'down';
+  }, (parameter) => {
+    return parameter;
   })
 };

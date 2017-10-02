@@ -22,7 +22,12 @@ let right = new Command([Parameter.FINITE_NUMBER], (degree) => {
   return turtle.rotate(0 - degree);
 });
 
-let commands = {forward, back, left, right};
+let pen = new Command([Parameter.UP_DOWN], (pen) => {
+  turtle.penDown = pen === 'down';
+  return turtle.getCopy();
+});
+
+let commands = {forward, back, left, right, pen};
 
 let repeat = new Command([Parameter.FINITE_NUMBER], (frequency) => {
   let newRepeat = new Repeat(currentRepeat, frequency);
@@ -96,10 +101,16 @@ function execute(input) {
   instantiateLoops();
   generateTurtleExecutions(tokenize(input));
 
-  let journey = [turtle.position];
+  let journey = [{
+    position: turtle.position, 
+    penDown: turtle.penDown
+  }];
 
   if(currentRepeat === masterRepeat) {
-    return journey.concat(masterRepeat.execute());
+    return journey.concat(masterRepeat.execute())
+    .filter((waypoint) => {
+      return waypoint !== null;
+    });
   } else {
     throw new Error('Unclosed repeat defined');
   }

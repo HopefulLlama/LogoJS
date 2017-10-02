@@ -3,6 +3,11 @@ import Position from './Position';
 export default class Turtle {
   constructor(position) {
     this.position = position;
+    this.penDown = true;
+  }
+
+  getCopy() {
+    return {position: this.position, penDown: this.penDown};
   }
 
   move(distance) {
@@ -14,7 +19,7 @@ export default class Turtle {
       this.position.angle
     );
     
-    return this.position;
+    return this.getCopy();
   }
 
   rotate(degree) {
@@ -26,6 +31,6 @@ export default class Turtle {
       angle
     );
 
-    return this.position;
+    return this.getCopy();
   }
 }

@@ -119,7 +119,12 @@ let right = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEB
   return turtle.rotate(0 - degree);
 });
 
-let commands = {forward, back, left, right};
+let pen = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].UP_DOWN], (pen) => {
+  turtle.penDown = pen === 'down';
+  return turtle.getCopy();
+});
+
+let commands = {forward, back, left, right, pen};
 
 let repeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
   let newRepeat = new __WEBPACK_IMPORTED_MODULE_2__Repeat__["a" /* default */](currentRepeat, frequency);
@@ -193,10 +198,16 @@ function execute(input) {
   instantiateLoops();
   generateTurtleExecutions(tokenize(input));
 
-  let journey = [turtle.position];
+  let journey = [{
+    position: turtle.position, 
+    penDown: turtle.penDown
+  }];
 
   if(currentRepeat === masterRepeat) {
-    return journey.concat(masterRepeat.execute());
+    return journey.concat(masterRepeat.execute())
+    .filter((waypoint) => {
+      return waypoint !== null;
+    });
   } else {
     throw new Error('Unclosed repeat defined');
   }
@@ -236,7 +247,7 @@ class Command {
         }
       };
     } else {
-      throw new Error();
+      throw new Error(`Invalid parameters: ${parameters}`);
     }
   }
 }
@@ -261,6 +272,11 @@ class Parameter {
     return isFinite(parameter);
   }, (parameter) => {
     return parseInt(parameter, 10);
+  }),
+  UP_DOWN: new Parameter((parameter) => {
+    return parameter === 'up' || parameter === 'down';
+  }, (parameter) => {
+    return parameter;
   })
 });
 
@@ -312,6 +328,11 @@ class Repeat {
 class Turtle {
   constructor(position) {
     this.position = position;
+    this.penDown = true;
+  }
+
+  getCopy() {
+    return {position: this.position, penDown: this.penDown};
   }
 
   move(distance) {
@@ -323,7 +344,7 @@ class Turtle {
       this.position.angle
     );
     
-    return this.position;
+    return this.getCopy();
   }
 
   rotate(degree) {
@@ -335,7 +356,7 @@ class Turtle {
       angle
     );
 
-    return this.position;
+    return this.getCopy();
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Turtle;

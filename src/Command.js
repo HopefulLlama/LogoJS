@@ -23,7 +23,7 @@ export default class Command {
         }
       };
     } else {
-      throw new Error();
+      throw new Error(`Invalid parameters: ${parameters}`);
     }
   }
 }
