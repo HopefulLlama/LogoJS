@@ -1,4 +1,4 @@
-describe('Execute', () => {
+describe('Pen', () => {
   beforeEach(() => {
     LogoJS.setPosition({x: 0, y: 0, angle: 0});
   });
@@ -65,5 +65,11 @@ describe('Execute', () => {
     expect(journey[6].position.x).toBe(0);
     expect(journey[6].position.angle).toBe(0);
     expect(journey[6].penDown).toBe(true);
+  });
+
+  it('bad parameter should throw an error', () => {
+    expect(() => {
+      LogoJS.execute('pen dab');
+    }).toThrowError('Invalid parameters: dab');
   });
 });

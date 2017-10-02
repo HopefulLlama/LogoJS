@@ -1,4 +1,4 @@
-describe('Execute', () => {
+describe('Repeat', () => {
   beforeEach(() => {
     LogoJS.setPosition({x: 0, y: 0, angle: 0});
   });
@@ -24,5 +24,23 @@ describe('Execute', () => {
         expect(journey[i].penDown).toBe(true);
       }
     });
+  });
+
+  it('bad parameter should throw an error', () => {
+    expect(() => {
+      LogoJS.execute('repeat dab');
+    }).toThrowError('Invalid parameters: dab');
+  });
+
+  it('unclosed repeat should throw error', () => {
+    expect(() => {
+      LogoJS.execute('repeat 5');
+    }).toThrowError('Unclosed repeat defined');
+  });
+
+  it('unopened repeat should throw error', () => {
+    expect(() => {
+      LogoJS.execute('endrepeat');
+    }).toThrowError('endrepeat called without matching repeat');
   });
 });
