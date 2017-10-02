@@ -9,7 +9,7 @@ export default {
   FINITE_NUMBER: new Parameter((parameter) => {
     return isFinite(parameter);
   }, (parameter) => {
-    return parseInt(parameter, 10);
+    return parseFloat(parameter);
   }),
   UP_DOWN: new Parameter((parameter) => {
     return parameter === 'up' || parameter === 'down';
