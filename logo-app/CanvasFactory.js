@@ -17,10 +17,12 @@ angular.module('LogoApp').factory('CanvasFactory', [
       }
 
       drawLine(journey) {
-        this.context.beginPath();
-        this.context.moveTo(journey.start.x, journey.start.y);
-        this.context.lineTo(journey.end.x, journey.end.y);
-        this.context.stroke();
+        if(journey.start.penDown === true && journey.start.penDown === true) {
+          this.context.beginPath();
+          this.context.moveTo(journey.start.position.x, journey.start.position.y);
+          this.context.lineTo(journey.end.position.x, journey.end.position.y);
+          this.context.stroke();
+        }
       }
     }
 

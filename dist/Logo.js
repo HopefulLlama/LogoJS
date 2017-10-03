@@ -95,13 +95,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Repeat__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Turtle__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Position__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Routine__ = __webpack_require__(6);
 
 
 
 
 
 
-let turtle, currentRepeat, masterRepeat;
+
+let turtle, currentRepeat, masterRepeat, currentRoutineDefinition;
+
+let routines = {};
+
+const STATE = {
+  EXECUTING_COMMANDS: (word, tokens) => {
+    if(controls[word] !== undefined) {
+      getControlExecution(controls[word], tokens).execute();
+    } else if(commands[word] !== undefined) {
+      currentRepeat.executions.push(getCommandExecution(commands[word], tokens));
+    } else if(routines[word] !== undefined) {
+      getRoutineExecution(routines[word], tokens);
+    } else {
+      throw new Error(`Control or Command not found: ${word}`);
+    }
+  },
+  DEFINING_ROUTINE_PARAMETERS: (word, tokens) => {
+    if(word !== 'startroutine') {
+      currentRoutineDefinition.parameters.push(word);
+    } else {
+      currentState = STATE.DEFINING_ROUTINE_BODY;
+    }
+  },
+  DEFINING_ROUTINE_BODY: (word, tokens) => {
+    if(word !== 'endroutine') {
+      currentRoutineDefinition.body.push(word);
+    } else {
+      currentState = STATE.EXECUTING_COMMANDS;
+      routines[currentRoutineDefinition.name] = currentRoutineDefinition;
+      currentRoutineDefinition = undefined;
+    }
+  }
+};
+
+let currentState = STATE.EXECUTING_COMMANDS;
 
 let forward = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
   return turtle.move(distance);
@@ -126,6 +162,19 @@ let pen = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPA
 
 let commands = {forward, back, left, right, pen};
 
+let routine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].NOT_KEYWORD], (name) => {
+  currentRoutineDefinition = new __WEBPACK_IMPORTED_MODULE_5__Routine__["a" /* default */](name);
+  currentState = STATE.DEFINING_ROUTINE_PARAMETERS;
+});
+
+let startroutine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
+  throw new Error('startroutine called without routine');
+});
+
+let endroutine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
+  throw new Error('endroutine called without routine');
+});
+
 let repeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
   let newRepeat = new __WEBPACK_IMPORTED_MODULE_2__Repeat__["a" /* default */](currentRepeat, frequency);
   currentRepeat.executions.push(newRepeat);
@@ -139,7 +188,7 @@ let endrepeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([]
   currentRepeat = currentRepeat.parent;
 });
 
-let controls = {repeat, endrepeat};
+let controls = {repeat, endrepeat, routine};
 
 function instantiateLoops() {
   currentRepeat = new __WEBPACK_IMPORTED_MODULE_2__Repeat__["a" /* default */](null, 1);
@@ -150,27 +199,30 @@ function tokenize(input) {
   return input.split("\n").join(" ").split(" ");
 }
 
+function getControlExecution(control, tokens) {
+  let parameters = tokens.splice(0, control.parameterSchema.length);
+  return control.createExecution(parameters);
+}
+
+function getCommandExecution(command, tokens) {
+  let parameters = tokens.splice(0, command.parameterSchema.length);
+  return command.createExecution(parameters);
+}
+
+function getRoutineExecution(routine, tokens) {
+  let parameters = tokens.splice(0, routine.parameters.length);
+  generateTurtleExecutions(routine.parseBody(parameters));
+}
+
 function generateTurtleExecutions(tokens) {
   while(tokens.length > 0) {
-    let word = tokens.shift();
-
-    let control = controls[word];
-    let command = commands[word];
-
-    if(control !== undefined) {
-      let parameters = tokens.splice(0, control.parameterSchema.length);
-      control.createExecution(parameters).execute();
-    } else if(command !== undefined) {
-      let parameters = tokens.splice(0, command.parameterSchema.length);
-      currentRepeat.executions.push(command.createExecution(parameters));
-    } else {
-      throw new Error(`Control or Command not found: ${word}`);        
-    }
+    currentState(tokens.shift(), tokens);
   }
 }
 
 function reset() {
   turtle = undefined;
+  routines = {};
 }
 
 function setPosition(position) {
@@ -267,6 +319,20 @@ class Parameter {
   }
 }
 
+const KEYWORDS = [
+  'forward',
+  'back',
+  'left',
+  'right',
+  'routine',
+  'startroutine',
+  'endroutine',
+  'repeat',
+  'endrepeat',
+  'up',
+  'down'
+];
+
 /* harmony default export */ __webpack_exports__["a"] = ({
   FINITE_NUMBER: new Parameter((parameter) => {
     return isFinite(parameter);
@@ -277,6 +343,11 @@ class Parameter {
     return parameter === 'up' || parameter === 'down';
   }, (parameter) => {
     return parameter;
+  }),
+  NOT_KEYWORD: new Parameter((parameter) => {
+    return /^[a-z].*/.test(parameter) && KEYWORDS.indexOf(parameter) === -1;
+  }, (parameter) => {
+    return parameter.toString();
   })
 });
 
@@ -361,6 +432,42 @@ class Turtle {
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Turtle;
 
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Routine {
+  constructor(name) {
+    this.name = name;
+    this.parameters = [];
+    this.body = [];
+  }
+
+  createParameterValueMap(values) {
+    if(values.length === this.parameters.length) {
+      return this.parameters.reduce((accumulator, parameterName, index) => {
+        accumulator[parameterName] = values[index];
+        return accumulator;
+      }, {});
+    }
+  }
+
+  parseBody(values) {
+    let parameterValues = this.createParameterValueMap(values);
+
+    return this.body.map((word) => {
+      if(parameterValues[word] !== undefined) {
+        return parameterValues[word];
+      } else {
+        return word;
+      }
+    });
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Routine;
 
 
 /***/ })

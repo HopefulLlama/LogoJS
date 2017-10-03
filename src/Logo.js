@@ -3,8 +3,43 @@ import Parameter from './Parameter';
 import Repeat from './Repeat';
 import Turtle from './Turtle';
 import Position from './Position';
+import Routine from './Routine';
 
-let turtle, currentRepeat, masterRepeat;
+let turtle, currentRepeat, masterRepeat, currentRoutineDefinition;
+
+let routines = {};
+
+const STATE = {
+  EXECUTING_COMMANDS: (word, tokens) => {
+    if(controls[word] !== undefined) {
+      getControlExecution(controls[word], tokens).execute();
+    } else if(commands[word] !== undefined) {
+      currentRepeat.executions.push(getCommandExecution(commands[word], tokens));
+    } else if(routines[word] !== undefined) {
+      getRoutineExecution(routines[word], tokens);
+    } else {
+      throw new Error(`Control or Command not found: ${word}`);
+    }
+  },
+  DEFINING_ROUTINE_PARAMETERS: (word, tokens) => {
+    if(word !== 'startroutine') {
+      currentRoutineDefinition.parameters.push(word);
+    } else {
+      currentState = STATE.DEFINING_ROUTINE_BODY;
+    }
+  },
+  DEFINING_ROUTINE_BODY: (word, tokens) => {
+    if(word !== 'endroutine') {
+      currentRoutineDefinition.body.push(word);
+    } else {
+      currentState = STATE.EXECUTING_COMMANDS;
+      routines[currentRoutineDefinition.name] = currentRoutineDefinition;
+      currentRoutineDefinition = undefined;
+    }
+  }
+};
+
+let currentState = STATE.EXECUTING_COMMANDS;
 
 let forward = new Command([Parameter.FINITE_NUMBER], (distance) => {
   return turtle.move(distance);
@@ -29,6 +64,19 @@ let pen = new Command([Parameter.UP_DOWN], (pen) => {
 
 let commands = {forward, back, left, right, pen};
 
+let routine = new Command([Parameter.NOT_KEYWORD], (name) => {
+  currentRoutineDefinition = new Routine(name);
+  currentState = STATE.DEFINING_ROUTINE_PARAMETERS;
+});
+
+let startroutine = new Command([], () => {
+  throw new Error('startroutine called without routine');
+});
+
+let endroutine = new Command([], () => {
+  throw new Error('endroutine called without routine');
+});
+
 let repeat = new Command([Parameter.FINITE_NUMBER], (frequency) => {
   let newRepeat = new Repeat(currentRepeat, frequency);
   currentRepeat.executions.push(newRepeat);
@@ -42,7 +90,7 @@ let endrepeat = new Command([], () => {
   currentRepeat = currentRepeat.parent;
 });
 
-let controls = {repeat, endrepeat};
+let controls = {repeat, endrepeat, routine};
 
 function instantiateLoops() {
   currentRepeat = new Repeat(null, 1);
@@ -53,27 +101,30 @@ function tokenize(input) {
   return input.split("\n").join(" ").split(" ");
 }
 
+function getControlExecution(control, tokens) {
+  let parameters = tokens.splice(0, control.parameterSchema.length);
+  return control.createExecution(parameters);
+}
+
+function getCommandExecution(command, tokens) {
+  let parameters = tokens.splice(0, command.parameterSchema.length);
+  return command.createExecution(parameters);
+}
+
+function getRoutineExecution(routine, tokens) {
+  let parameters = tokens.splice(0, routine.parameters.length);
+  generateTurtleExecutions(routine.parseBody(parameters));
+}
+
 function generateTurtleExecutions(tokens) {
   while(tokens.length > 0) {
-    let word = tokens.shift();
-
-    let control = controls[word];
-    let command = commands[word];
-
-    if(control !== undefined) {
-      let parameters = tokens.splice(0, control.parameterSchema.length);
-      control.createExecution(parameters).execute();
-    } else if(command !== undefined) {
-      let parameters = tokens.splice(0, command.parameterSchema.length);
-      currentRepeat.executions.push(command.createExecution(parameters));
-    } else {
-      throw new Error(`Control or Command not found: ${word}`);        
-    }
+    currentState(tokens.shift(), tokens);
   }
 }
 
 function reset() {
   turtle = undefined;
+  routines = {};
 }
 
 function setPosition(position) {
