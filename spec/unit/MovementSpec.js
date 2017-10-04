@@ -41,13 +41,12 @@ describe('Movement', () => {
     {command: 'left 361', position: {x: 0, y: 0, angle: 1}}
   ].forEach((testCase) => {
     it(`'${testCase.command}' should give ${JSON.stringify(testCase.position)}`, () => {
-      let waypoint = LogoJS.execute(testCase.command).pop();
-
-      expect(waypoint.position.x).toBe(testCase.position.x, 'x');
-      expect(waypoint.position.y).toBe(testCase.position.y, 'y');
-      expect(waypoint.position.angle).toBe(testCase.position.angle, 'angle');
-
-      expect(waypoint.penDown).toBe(true, 'penDown');
+      let journey = LogoJS.execute(testCase.command);
+      
+      compareJourneys(journey, [
+        {position: {x: 0, y: 0, angle: 0}, penDown: true},
+        {position: testCase.position, penDown: true}
+      ]);
     });
   });
 

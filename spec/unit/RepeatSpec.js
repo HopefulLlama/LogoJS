@@ -14,15 +14,13 @@ describe('Repeat', () => {
     it(`'${testCase.command}' should repeat ${testCase.iterations} times`, () => {
       let journey = LogoJS.execute(testCase.command);
 
-      expect(journey.length).toBe(testCase.iterations + 1);
+      let expectedJourney = [];
+
       for(let i = 0; i <= testCase.iterations; i++) {
-        expect(journey[i].position.y).toBe(i);
-
-        expect(journey[i].position.x).toBe(0);
-        expect(journey[i].position.angle).toBe(0);
-
-        expect(journey[i].penDown).toBe(true);
+        expectedJourney.push({position: {x: 0, y: i, angle: 0}, penDown: true});
       }
+
+      compareJourneys(journey, expectedJourney);
     });
   });
 

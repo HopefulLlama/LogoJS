@@ -3,6 +3,7 @@ module.exports = function(config) {
     browsers: ['Chrome'],
     frameworks: ['jasmine'],
     files: [
+      'spec/unit/SpecUtility.js',
       'dist/Logo.js',
       'spec/unit/**/*Spec.js'
     ]
