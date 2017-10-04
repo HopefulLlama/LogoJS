@@ -90,7 +90,7 @@ let endrepeat = new Command([], () => {
   currentRepeat = currentRepeat.parent;
 });
 
-let controls = {repeat, endrepeat, routine};
+let controls = {repeat, endrepeat, routine, startroutine, endroutine};
 
 function instantiateLoops() {
   currentRepeat = new Repeat(null, 1);

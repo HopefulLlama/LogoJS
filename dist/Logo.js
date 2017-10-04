@@ -188,7 +188,7 @@ let endrepeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([]
   currentRepeat = currentRepeat.parent;
 });
 
-let controls = {repeat, endrepeat, routine};
+let controls = {repeat, endrepeat, routine, startroutine, endroutine};
 
 function instantiateLoops() {
   currentRepeat = new __WEBPACK_IMPORTED_MODULE_2__Repeat__["a" /* default */](null, 1);
