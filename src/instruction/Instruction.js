@@ -1,4 +1,4 @@
-export default class Command {
+export default class Instruction {
   constructor(parameterSchema, execute) {
     this.parameterSchema = parameterSchema;
     this.execute = execute;

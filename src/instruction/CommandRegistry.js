@@ -1,24 +1,24 @@
 import Parameter from './Parameter';
-import Command from './Command';
+import Instruction from './Instruction';
 import Turtle from '../turtle/Turtle';
 
-let forward = new Command([Parameter.FINITE_NUMBER], (distance) => {
+let forward = new Instruction([Parameter.FINITE_NUMBER], (distance) => {
   return Turtle.move(distance);
 });
 
-let back = new Command([Parameter.FINITE_NUMBER], (distance) => {
+let back = new Instruction([Parameter.FINITE_NUMBER], (distance) => {
   return Turtle.move(0 - distance);
 });
 
-let left = new Command([Parameter.FINITE_NUMBER], (degree) => {
+let left = new Instruction([Parameter.FINITE_NUMBER], (degree) => {
   return Turtle.rotate(degree);
 });
 
-let right = new Command([Parameter.FINITE_NUMBER], (degree) => {
+let right = new Instruction([Parameter.FINITE_NUMBER], (degree) => {
   return Turtle.rotate(0 - degree);
 });
 
-let pen = new Command([Parameter.UP_DOWN], (pen) => {
+let pen = new Instruction([Parameter.UP_DOWN], (pen) => {
   Turtle.penDown = (pen === 'down');
   return Turtle.getCopy();
 });

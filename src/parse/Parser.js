@@ -1,4 +1,4 @@
-import Command from '../instruction/Command';
+import Instruction from '../instruction/Instruction';
 import CommandRegistry from '../instruction/CommandRegistry';
 import Parameter from '../instruction/Parameter';
 import Repeat from '../instruction/Repeat';
@@ -15,7 +15,7 @@ const STATE = {
     if(controls[word] !== undefined) {
       getControlExecution(controls[word], tokens).execute();
     } else if(CommandRegistry[word] !== undefined) {
-      ExecutionStack.pushExecution(getCommandExecution(CommandRegistry[word], tokens));
+      ExecutionStack.pushExecution(getInstructionExecution(CommandRegistry[word], tokens));
     } else if(routines[word] !== undefined) {
       getRoutineExecution(routines[word], tokens);
     } else {
@@ -44,24 +44,24 @@ const STATE = {
 
 let currentState = STATE.EXECUTING_COMMANDS;
 
-let routine = new Command([Parameter.NOT_KEYWORD], (name) => {
+let routine = new Instruction([Parameter.NOT_KEYWORD], (name) => {
   currentRoutineDefinition = new Routine(name);
   currentState = STATE.DEFINING_ROUTINE_PARAMETERS;
 });
 
-let startroutine = new Command([], () => {
+let startroutine = new Instruction([], () => {
   throw new Error('startroutine called without routine');
 });
 
-let endroutine = new Command([], () => {
+let endroutine = new Instruction([], () => {
   throw new Error('endroutine called without routine');
 });
 
-let repeat = new Command([Parameter.FINITE_NUMBER], (frequency) => {
+let repeat = new Instruction([Parameter.FINITE_NUMBER], (frequency) => {
   ExecutionStack.pushNewRepeat(frequency);
 });
 
-let endrepeat = new Command([], () => {
+let endrepeat = new Instruction([], () => {
   ExecutionStack.closeCurrentRepeat();
 });
 
@@ -76,7 +76,7 @@ function getControlExecution(control, tokens) {
   return control.createExecution(parameters);
 }
 
-function getCommandExecution(command, tokens) {
+function getInstructionExecution(command, tokens) {
   let parameters = tokens.splice(0, command.parameterSchema.length);
   return command.createExecution(parameters);
 }

@@ -138,7 +138,7 @@ class Position {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-class Command {
+class Instruction {
   constructor(parameterSchema, execute) {
     this.parameterSchema = parameterSchema;
     this.execute = execute;
@@ -167,7 +167,7 @@ class Command {
     }
   }
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Command;
+/* harmony export (immutable) */ __webpack_exports__["a"] = Instruction;
 
 
 
@@ -305,7 +305,7 @@ function execute(input) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_Command__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_Instruction__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__instruction_Repeat__ = __webpack_require__(5);
@@ -329,7 +329,7 @@ const STATE = {
     if(controls[word] !== undefined) {
       getControlExecution(controls[word], tokens).execute();
     } else if(__WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__["a" /* default */][word] !== undefined) {
-      __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__["a" /* default */].pushExecution(getCommandExecution(__WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__["a" /* default */][word], tokens));
+      __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__["a" /* default */].pushExecution(getInstructionExecution(__WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__["a" /* default */][word], tokens));
     } else if(routines[word] !== undefined) {
       getRoutineExecution(routines[word], tokens);
     } else {
@@ -358,24 +358,24 @@ const STATE = {
 
 let currentState = STATE.EXECUTING_COMMANDS;
 
-let routine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__["a" /* default */].NOT_KEYWORD], (name) => {
+let routine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__["a" /* default */].NOT_KEYWORD], (name) => {
   currentRoutineDefinition = new __WEBPACK_IMPORTED_MODULE_4__instruction_Routine__["a" /* default */](name);
   currentState = STATE.DEFINING_ROUTINE_PARAMETERS;
 });
 
-let startroutine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([], () => {
+let startroutine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Instruction__["a" /* default */]([], () => {
   throw new Error('startroutine called without routine');
 });
 
-let endroutine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([], () => {
+let endroutine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Instruction__["a" /* default */]([], () => {
   throw new Error('endroutine called without routine');
 });
 
-let repeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
+let repeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
   __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__["a" /* default */].pushNewRepeat(frequency);
 });
 
-let endrepeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([], () => {
+let endrepeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Instruction__["a" /* default */]([], () => {
   __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__["a" /* default */].closeCurrentRepeat();
 });
 
@@ -390,7 +390,7 @@ function getControlExecution(control, tokens) {
   return control.createExecution(parameters);
 }
 
-function getCommandExecution(command, tokens) {
+function getInstructionExecution(command, tokens) {
   let parameters = tokens.splice(0, command.parameterSchema.length);
   return command.createExecution(parameters);
 }
@@ -427,29 +427,29 @@ function parse(input) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Parameter__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Command__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Instruction__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__ = __webpack_require__(0);
 
 
 
 
-let forward = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
+let forward = new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
   return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].move(distance);
 });
 
-let back = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
+let back = new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
   return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].move(0 - distance);
 });
 
-let left = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
+let left = new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
   return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].rotate(degree);
 });
 
-let right = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
+let right = new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
   return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].rotate(0 - degree);
 });
 
-let pen = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].UP_DOWN], (pen) => {
+let pen = new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].UP_DOWN], (pen) => {
   __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].penDown = (pen === 'down');
   return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].getCopy();
 });
