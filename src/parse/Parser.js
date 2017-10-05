@@ -3,8 +3,9 @@ import CommandRegistry from '../CommandRegistry';
 import Parameter from '../Parameter';
 import Repeat from '../Repeat';
 import Routine from '../Routine';
+import ExecutionStack from './ExecutionStack';
 
-let currentRepeat, masterRepeat, currentRoutineDefinition;
+let currentRoutineDefinition;
 
 let routines = {};
 
@@ -13,7 +14,7 @@ const STATE = {
     if(controls[word] !== undefined) {
       getControlExecution(controls[word], tokens).execute();
     } else if(CommandRegistry[word] !== undefined) {
-      currentRepeat.executions.push(getCommandExecution(CommandRegistry[word], tokens));
+      ExecutionStack.pushExecution(getCommandExecution(CommandRegistry[word], tokens));
     } else if(routines[word] !== undefined) {
       getRoutineExecution(routines[word], tokens);
     } else {
@@ -54,24 +55,14 @@ let endroutine = new Command([], () => {
 });
 
 let repeat = new Command([Parameter.FINITE_NUMBER], (frequency) => {
-  let newRepeat = new Repeat(currentRepeat, frequency);
-  currentRepeat.executions.push(newRepeat);
-  currentRepeat = newRepeat;
+  ExecutionStack.pushNewRepeat(frequency);
 });
 
 let endrepeat = new Command([], () => {
-  if(currentRepeat.parent === null) {
-    throw new Error('endrepeat called without matching repeat');
-  }
-  currentRepeat = currentRepeat.parent;
+  ExecutionStack.closeCurrentRepeat();
 });
 
 let controls = {repeat, endrepeat, routine, startroutine, endroutine};
-
-function instantiateLoops() {
-  currentRepeat = new Repeat(null, 1);
-  masterRepeat = currentRepeat; 
-}
 
 function tokenize(input) {
   return input.split("\n").join(" ").split(" ");
@@ -103,16 +94,12 @@ function reset() {
 }
 
 function parse(input) {
-  instantiateLoops();
+  ExecutionStack.instantiate();
   generateTurtleExecutions(tokenize(input));
 
-  if(currentRepeat === masterRepeat) {
-    return () => {
-      return masterRepeat.execute();
-    };
-  } else {
-    throw new Error('Unclosed repeat defined');
-  }
+  return () => {
+    return ExecutionStack.execute();
+  };
 }
 
 export default {reset, parse};
