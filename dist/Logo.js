@@ -280,7 +280,6 @@ function reset() {
 
 function setPosition(position) {
   __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].position = new __WEBPACK_IMPORTED_MODULE_1__turtle_Position__["a" /* default */](position.x, position.y, position.angle);
-  return this;
 }
 
 function getPosition() {
@@ -288,14 +287,20 @@ function getPosition() {
 }
 
 function execute(input) {
-  let journey = [__WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].getCopy()];
+  try {
+    let journey = [__WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].getCopy()];
 
-  let execution = __WEBPACK_IMPORTED_MODULE_2__parse_Parser__["a" /* default */].parse(input);
-  journey = journey.concat(execution());
+    let execution = __WEBPACK_IMPORTED_MODULE_2__parse_Parser__["a" /* default */].parse(input);
+    journey = journey.concat(execution());
 
-  reset();
+    reset();
 
-  return journey;
+    return journey;
+  } catch(error) {
+    reset();
+
+    throw error;
+  }
 }
 
 /* harmony default export */ __webpack_exports__["default"] = ({reset, setPosition, getPosition, execute});
@@ -408,6 +413,7 @@ function generateTurtleExecutions(tokens) {
 
 function reset() {
   routines = {};
+  currentState = STATE.EXECUTING_COMMANDS;
 }
 
 function parse(input) {

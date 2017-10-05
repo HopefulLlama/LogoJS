@@ -90,5 +90,5 @@ gulp.task('lint-app', () => {
 
 gulp.task('unit-test', () => {
   let karma = path.join('node_modules', 'karma', 'bin', 'karma');
-  childProcess.execSync(`node ${karma} start --single-run`, {stdio: [0,1,2]});
+  childProcess.execSync(`node ${karma} start  --single-run`, {stdio: [0,1,2]});
 });

@@ -9,7 +9,6 @@ function reset() {
 
 function setPosition(position) {
   Turtle.position = new Position(position.x, position.y, position.angle);
-  return this;
 }
 
 function getPosition() {
@@ -17,14 +16,20 @@ function getPosition() {
 }
 
 function execute(input) {
-  let journey = [Turtle.getCopy()];
+  try {
+    let journey = [Turtle.getCopy()];
 
-  let execution = Parser.parse(input);
-  journey = journey.concat(execution());
+    let execution = Parser.parse(input);
+    journey = journey.concat(execution());
 
-  reset();
+    reset();
 
-  return journey;
+    return journey;
+  } catch(error) {
+    reset();
+
+    throw error;
+  }
 }
 
 export default {reset, setPosition, getPosition, execute};

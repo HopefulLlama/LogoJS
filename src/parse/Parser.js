@@ -94,6 +94,7 @@ function generateTurtleExecutions(tokens) {
 
 function reset() {
   routines = {};
+  currentState = STATE.EXECUTING_COMMANDS;
 }
 
 function parse(input) {

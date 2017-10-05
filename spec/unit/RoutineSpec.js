@@ -1,5 +1,6 @@
 describe('Routine', () => {
   beforeEach(() => {
+    LogoJS.reset();
     LogoJS.setPosition({x: 0, y: 0, angle: 0});
   });
 
@@ -60,6 +61,24 @@ describe('Routine', () => {
     });
   });
 
+  [
+    'forward',
+    'back',
+    'left',
+    'right',
+    'routine',
+    'endroutine',
+    'repeat',
+    'endrepeat',
+    'up',
+    'down'
+  ].forEach((keyword) => {
+    it(`should throw error when trying to define ${keyword} as a routine parameter`, () => {
+      expect(() => {
+        LogoJS.execute(`routine basic ${keyword} startroutine forward 1 endroutine`);
+      }).toThrowError(`Keyword ${keyword} not allowed as routine parameter`);
+    });
+  });
 
   it('should throw error when startroutine without routine', () => {
     expect(() => {

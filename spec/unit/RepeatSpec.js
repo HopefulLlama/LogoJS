@@ -1,5 +1,6 @@
 describe('Repeat', () => {
   beforeEach(() => {
+    LogoJS.reset();
     LogoJS.setPosition({x: 0, y: 0, angle: 0});
   });
 
