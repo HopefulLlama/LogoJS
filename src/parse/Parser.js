@@ -4,6 +4,7 @@ import Parameter from '../instruction/Parameter';
 import Repeat from '../instruction/Repeat';
 import Routine from '../instruction/Routine';
 import ExecutionStack from './ExecutionStack';
+import Keywords from '../instruction/Keywords';
 
 let currentRoutineDefinition;
 
@@ -22,19 +23,21 @@ const STATE = {
     }
   },
   DEFINING_ROUTINE_PARAMETERS: (word, tokens) => {
-    if(word !== 'startroutine') {
-      currentRoutineDefinition.parameters.push(word);
-    } else {
+    if(word === Keywords.STARTROUTINE) {
       currentState = STATE.DEFINING_ROUTINE_BODY;
+    } else if(Object.values(Keywords).indexOf(word) !== -1) {
+      throw new Error(`Keyword ${word} not allowed as routine parameter`);
+    } else {
+      currentRoutineDefinition.parameters.push(word);
     }
   },
   DEFINING_ROUTINE_BODY: (word, tokens) => {
-    if(word !== 'endroutine') {
-      currentRoutineDefinition.body.push(word);
-    } else {
+    if(word === Keywords.ENDROUTINE) {
       currentState = STATE.EXECUTING_COMMANDS;
       routines[currentRoutineDefinition.name] = currentRoutineDefinition;
       currentRoutineDefinition = undefined;
+    } else {
+      currentRoutineDefinition.body.push(word);
     }
   }
 };

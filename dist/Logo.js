@@ -61,7 +61,7 @@ var LogoJS =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -176,26 +176,15 @@ class Command {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Keywords__ = __webpack_require__(4);
+
+
 class Parameter {
   constructor(validate, transform) {
     this.validate = validate;
     this.transform = transform;
   }
 }
-
-const KEYWORDS = [
-  'forward',
-  'back',
-  'left',
-  'right',
-  'routine',
-  'startroutine',
-  'endroutine',
-  'repeat',
-  'endrepeat',
-  'up',
-  'down'
-];
 
 /* harmony default export */ __webpack_exports__["a"] = ({
   FINITE_NUMBER: new Parameter((parameter) => {
@@ -204,12 +193,12 @@ const KEYWORDS = [
     return parseFloat(parameter);
   }),
   UP_DOWN: new Parameter((parameter) => {
-    return parameter === 'up' || parameter === 'down';
+    return parameter === __WEBPACK_IMPORTED_MODULE_0__Keywords__["a" /* default */].UP || parameter === __WEBPACK_IMPORTED_MODULE_0__Keywords__["a" /* default */].DOWN;
   }, (parameter) => {
     return parameter;
   }),
   NOT_KEYWORD: new Parameter((parameter) => {
-    return /^[a-z].*/.test(parameter) && KEYWORDS.indexOf(parameter) === -1;
+    return /^[a-z].*/.test(parameter) && Object.values(__WEBPACK_IMPORTED_MODULE_0__Keywords__["a" /* default */]).indexOf(parameter) === -1;
   }, (parameter) => {
     return parameter.toString();
   })
@@ -217,6 +206,25 @@ const KEYWORDS = [
 
 /***/ }),
 /* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  FORWARD: 'forward',
+  BACK: 'back',
+  LEFT: 'left',
+  RIGHT: 'right',
+  ROUTINE: 'routine',
+  STARTROUTINE: 'startroutine',
+  ENDROUTINE: 'endroutine',
+  REPEAT: 'repeat',
+  ENDREPEAT: 'endrepeat',
+  UP: 'up',
+  DOWN: 'down'
+});
+
+/***/ }),
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -253,14 +261,14 @@ class Repeat {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__turtle_Position__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__parse_Parser__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__parse_Parser__ = __webpack_require__(7);
 
 
 
@@ -293,16 +301,18 @@ function execute(input) {
 /* harmony default export */ __webpack_exports__["default"] = ({reset, setPosition, getPosition, execute});
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_Command__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__instruction_Repeat__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__instruction_Routine__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__instruction_Repeat__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__instruction_Routine__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__instruction_Keywords__ = __webpack_require__(4);
+
 
 
 
@@ -327,19 +337,21 @@ const STATE = {
     }
   },
   DEFINING_ROUTINE_PARAMETERS: (word, tokens) => {
-    if(word !== 'startroutine') {
-      currentRoutineDefinition.parameters.push(word);
-    } else {
+    if(word === __WEBPACK_IMPORTED_MODULE_6__instruction_Keywords__["a" /* default */].STARTROUTINE) {
       currentState = STATE.DEFINING_ROUTINE_BODY;
+    } else if(Object.values(__WEBPACK_IMPORTED_MODULE_6__instruction_Keywords__["a" /* default */]).indexOf(word) !== -1) {
+      throw new Error(`Keyword ${word} not allowed as routine parameter`);
+    } else {
+      currentRoutineDefinition.parameters.push(word);
     }
   },
   DEFINING_ROUTINE_BODY: (word, tokens) => {
-    if(word !== 'endroutine') {
-      currentRoutineDefinition.body.push(word);
-    } else {
+    if(word === __WEBPACK_IMPORTED_MODULE_6__instruction_Keywords__["a" /* default */].ENDROUTINE) {
       currentState = STATE.EXECUTING_COMMANDS;
       routines[currentRoutineDefinition.name] = currentRoutineDefinition;
       currentRoutineDefinition = undefined;
+    } else {
+      currentRoutineDefinition.body.push(word);
     }
   }
 };
@@ -410,7 +422,7 @@ function parse(input) {
 /* harmony default export */ __webpack_exports__["a"] = ({reset, parse});
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -445,7 +457,7 @@ let pen = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPA
 /* harmony default export */ __webpack_exports__["a"] = ({forward, back, left, right, pen});
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -481,11 +493,11 @@ class Routine {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_Repeat__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_Repeat__ = __webpack_require__(5);
 
 
 class ExecutionStack {
