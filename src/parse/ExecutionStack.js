@@ -1,4 +1,4 @@
-import Repeat from '../Repeat';
+import Repeat from '../instruction/Repeat';
 
 class ExecutionStack {
   constructor() {

@@ -1,5 +1,5 @@
-import Turtle from './Turtle';
-import Position from './Position';
+import Turtle from './turtle/Turtle';
+import Position from './turtle/Position';
 import Parser from './parse/Parser';
 
 function reset() {

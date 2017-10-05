@@ -258,29 +258,29 @@ class Repeat {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Turtle__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Position__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__turtle_Position__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__parse_Parser__ = __webpack_require__(6);
 
 
 
 
 function reset() {
-  __WEBPACK_IMPORTED_MODULE_0__Turtle__["a" /* default */].reset();
+  __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].reset();
   __WEBPACK_IMPORTED_MODULE_2__parse_Parser__["a" /* default */].reset();
 }
 
 function setPosition(position) {
-  __WEBPACK_IMPORTED_MODULE_0__Turtle__["a" /* default */].position = new __WEBPACK_IMPORTED_MODULE_1__Position__["a" /* default */](position.x, position.y, position.angle);
+  __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].position = new __WEBPACK_IMPORTED_MODULE_1__turtle_Position__["a" /* default */](position.x, position.y, position.angle);
   return this;
 }
 
 function getPosition() {
-	return __WEBPACK_IMPORTED_MODULE_0__Turtle__["a" /* default */].position;
+	return __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].position;
 }
 
 function execute(input) {
-  let journey = [__WEBPACK_IMPORTED_MODULE_0__Turtle__["a" /* default */].getCopy()];
+  let journey = [__WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].getCopy()];
 
   let execution = __WEBPACK_IMPORTED_MODULE_2__parse_Parser__["a" /* default */].parse(input);
   journey = journey.concat(execution());
@@ -297,11 +297,11 @@ function execute(input) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Command__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__CommandRegistry__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Parameter__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Repeat__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Routine__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_Command__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__instruction_Repeat__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__instruction_Routine__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__ = __webpack_require__(9);
 
 
@@ -318,8 +318,8 @@ const STATE = {
   EXECUTING_COMMANDS: (word, tokens) => {
     if(controls[word] !== undefined) {
       getControlExecution(controls[word], tokens).execute();
-    } else if(__WEBPACK_IMPORTED_MODULE_1__CommandRegistry__["a" /* default */][word] !== undefined) {
-      __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__["a" /* default */].pushExecution(getCommandExecution(__WEBPACK_IMPORTED_MODULE_1__CommandRegistry__["a" /* default */][word], tokens));
+    } else if(__WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__["a" /* default */][word] !== undefined) {
+      __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__["a" /* default */].pushExecution(getCommandExecution(__WEBPACK_IMPORTED_MODULE_1__instruction_CommandRegistry__["a" /* default */][word], tokens));
     } else if(routines[word] !== undefined) {
       getRoutineExecution(routines[word], tokens);
     } else {
@@ -346,24 +346,24 @@ const STATE = {
 
 let currentState = STATE.EXECUTING_COMMANDS;
 
-let routine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__Parameter__["a" /* default */].NOT_KEYWORD], (name) => {
-  currentRoutineDefinition = new __WEBPACK_IMPORTED_MODULE_4__Routine__["a" /* default */](name);
+let routine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__["a" /* default */].NOT_KEYWORD], (name) => {
+  currentRoutineDefinition = new __WEBPACK_IMPORTED_MODULE_4__instruction_Routine__["a" /* default */](name);
   currentState = STATE.DEFINING_ROUTINE_PARAMETERS;
 });
 
-let startroutine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
+let startroutine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([], () => {
   throw new Error('startroutine called without routine');
 });
 
-let endroutine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
+let endroutine = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([], () => {
   throw new Error('endroutine called without routine');
 });
 
-let repeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
+let repeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__instruction_Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
   __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__["a" /* default */].pushNewRepeat(frequency);
 });
 
-let endrepeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
+let endrepeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Command__["a" /* default */]([], () => {
   __WEBPACK_IMPORTED_MODULE_5__ExecutionStack__["a" /* default */].closeCurrentRepeat();
 });
 
@@ -416,30 +416,30 @@ function parse(input) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Parameter__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Command__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Turtle__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__ = __webpack_require__(0);
 
 
 
 
 let forward = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
-  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].move(distance);
+  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].move(distance);
 });
 
 let back = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
-  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].move(0 - distance);
+  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].move(0 - distance);
 });
 
 let left = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
-  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].rotate(degree);
+  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].rotate(degree);
 });
 
 let right = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
-  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].rotate(0 - degree);
+  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].rotate(0 - degree);
 });
 
 let pen = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].UP_DOWN], (pen) => {
-  __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].penDown = (pen === 'down');
-  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].getCopy();
+  __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].penDown = (pen === 'down');
+  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].getCopy();
 });
 
 /* harmony default export */ __webpack_exports__["a"] = ({forward, back, left, right, pen});
@@ -485,7 +485,7 @@ class Routine {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Repeat__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_Repeat__ = __webpack_require__(4);
 
 
 class ExecutionStack {
@@ -494,7 +494,7 @@ class ExecutionStack {
   }
 
   instantiate() {
-    this.currentRepeat = new __WEBPACK_IMPORTED_MODULE_0__Repeat__["a" /* default */](null, 1);
+    this.currentRepeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Repeat__["a" /* default */](null, 1);
     this.masterRepeat = this.currentRepeat;
   }
 
@@ -503,7 +503,7 @@ class ExecutionStack {
   }
 
   pushNewRepeat(frequency) {
-    let newRepeat = new __WEBPACK_IMPORTED_MODULE_0__Repeat__["a" /* default */](this.currentRepeat, frequency);
+    let newRepeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Repeat__["a" /* default */](this.currentRepeat, frequency);
     this.pushExecution(newRepeat);
     this.currentRepeat = newRepeat;
   }

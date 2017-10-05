@@ -1,8 +1,8 @@
-import Command from '../Command';
-import CommandRegistry from '../CommandRegistry';
-import Parameter from '../Parameter';
-import Repeat from '../Repeat';
-import Routine from '../Routine';
+import Command from '../instruction/Command';
+import CommandRegistry from '../instruction/CommandRegistry';
+import Parameter from '../instruction/Parameter';
+import Repeat from '../instruction/Repeat';
+import Routine from '../instruction/Routine';
 import ExecutionStack from './ExecutionStack';
 
 let currentRoutineDefinition;
