@@ -1,9 +1,13 @@
 import Position from './Position';
 
-export default class Turtle {
-  constructor(position) {
-    this.position = position;
-    this.penDown = true;
+class Turtle {
+  constructor(position, penDown) {
+    this.reset(position, penDown);
+  }
+
+  reset(position, penDown) {
+    this.position = (position !== undefined) ? position : new Position(0, 0, 180);
+    this.penDown = (penDown !== undefined) ? penDown : true;
   }
 
   getCopy() {
@@ -34,3 +38,5 @@ export default class Turtle {
     return this.getCopy();
   }
 }
+
+export default new Turtle();

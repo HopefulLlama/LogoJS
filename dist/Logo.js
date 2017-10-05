@@ -61,11 +61,60 @@ var LogoJS =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Position__ = __webpack_require__(1);
+
+
+class Turtle {
+  constructor(position, penDown) {
+    this.reset(position, penDown);
+  }
+
+  reset(position, penDown) {
+    this.position = (position !== undefined) ? position : new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](0, 0, 180);
+    this.penDown = (penDown !== undefined) ? penDown : true;
+  }
+
+  getCopy() {
+    return {position: this.position, penDown: this.penDown};
+  }
+
+  move(distance) {
+    let radians = Math.PI * this.position.angle / 180;
+
+    this.position = new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](
+      this.position.x + (distance * Math.sin(radians)),
+      this.position.y + (distance * Math.cos(radians)),
+      this.position.angle
+    );
+    
+    return this.getCopy();
+  }
+
+  rotate(degree) {
+    let angle = this.position.angle + degree;
+
+    this.position = new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](
+      this.position.x,
+      this.position.y,
+      angle
+    );
+
+    return this.getCopy();
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (new Turtle());
+
+/***/ }),
+/* 1 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -83,191 +132,6 @@ class Position {
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Position;
 
-
-/***/ }),
-/* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Command__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Parameter__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Repeat__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Turtle__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Position__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Routine__ = __webpack_require__(6);
-
-
-
-
-
-
-
-let turtle, currentRepeat, masterRepeat, currentRoutineDefinition;
-
-let routines = {};
-
-const STATE = {
-  EXECUTING_COMMANDS: (word, tokens) => {
-    if(controls[word] !== undefined) {
-      getControlExecution(controls[word], tokens).execute();
-    } else if(commands[word] !== undefined) {
-      currentRepeat.executions.push(getCommandExecution(commands[word], tokens));
-    } else if(routines[word] !== undefined) {
-      getRoutineExecution(routines[word], tokens);
-    } else {
-      throw new Error(`Control or Command not found: ${word}`);
-    }
-  },
-  DEFINING_ROUTINE_PARAMETERS: (word, tokens) => {
-    if(word !== 'startroutine') {
-      currentRoutineDefinition.parameters.push(word);
-    } else {
-      currentState = STATE.DEFINING_ROUTINE_BODY;
-    }
-  },
-  DEFINING_ROUTINE_BODY: (word, tokens) => {
-    if(word !== 'endroutine') {
-      currentRoutineDefinition.body.push(word);
-    } else {
-      currentState = STATE.EXECUTING_COMMANDS;
-      routines[currentRoutineDefinition.name] = currentRoutineDefinition;
-      currentRoutineDefinition = undefined;
-    }
-  }
-};
-
-let currentState = STATE.EXECUTING_COMMANDS;
-
-let forward = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
-  return turtle.move(distance);
-});
-
-let back = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
-  return turtle.move(0 - distance);
-});
-
-let left = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
-  return turtle.rotate(degree);
-});
-
-let right = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
-  return turtle.rotate(0 - degree);
-});
-
-let pen = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].UP_DOWN], (pen) => {
-  turtle.penDown = pen === 'down';
-  return turtle.getCopy();
-});
-
-let commands = {forward, back, left, right, pen};
-
-let routine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].NOT_KEYWORD], (name) => {
-  currentRoutineDefinition = new __WEBPACK_IMPORTED_MODULE_5__Routine__["a" /* default */](name);
-  currentState = STATE.DEFINING_ROUTINE_PARAMETERS;
-});
-
-let startroutine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
-  throw new Error('startroutine called without routine');
-});
-
-let endroutine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
-  throw new Error('endroutine called without routine');
-});
-
-let repeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_1__Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
-  let newRepeat = new __WEBPACK_IMPORTED_MODULE_2__Repeat__["a" /* default */](currentRepeat, frequency);
-  currentRepeat.executions.push(newRepeat);
-  currentRepeat = newRepeat;
-});
-
-let endrepeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
-  if(currentRepeat.parent === null) {
-    throw new Error('endrepeat called without matching repeat');
-  }
-  currentRepeat = currentRepeat.parent;
-});
-
-let controls = {repeat, endrepeat, routine, startroutine, endroutine};
-
-function instantiateLoops() {
-  currentRepeat = new __WEBPACK_IMPORTED_MODULE_2__Repeat__["a" /* default */](null, 1);
-  masterRepeat = currentRepeat; 
-}
-
-function tokenize(input) {
-  return input.split("\n").join(" ").split(" ");
-}
-
-function getControlExecution(control, tokens) {
-  let parameters = tokens.splice(0, control.parameterSchema.length);
-  return control.createExecution(parameters);
-}
-
-function getCommandExecution(command, tokens) {
-  let parameters = tokens.splice(0, command.parameterSchema.length);
-  return command.createExecution(parameters);
-}
-
-function getRoutineExecution(routine, tokens) {
-  let parameters = tokens.splice(0, routine.parameters.length);
-  generateTurtleExecutions(routine.parseBody(parameters));
-}
-
-function generateTurtleExecutions(tokens) {
-  while(tokens.length > 0) {
-    currentState(tokens.shift(), tokens);
-  }
-}
-
-function reset() {
-  turtle = undefined;
-  routines = {};
-}
-
-function setPosition(position) {
-  turtle = new __WEBPACK_IMPORTED_MODULE_3__Turtle__["a" /* default */](new __WEBPACK_IMPORTED_MODULE_4__Position__["a" /* default */](
-    position.x,
-    position.y,
-    position.angle
-  ));
-  return this;
-}
-
-function getPosition() {
-	if(turtle !== undefined) {
-		return turtle.position;
-	} else {
-		return null;
-	}
-}
-
-function execute(input) {
-  if(turtle === undefined) {
-    turtle = new __WEBPACK_IMPORTED_MODULE_3__Turtle__["a" /* default */](new __WEBPACK_IMPORTED_MODULE_4__Position__["a" /* default */](0, 0, 180));
-  }
-
-  instantiateLoops();
-  generateTurtleExecutions(tokenize(input));
-
-  let journey = [{
-    position: turtle.position, 
-    penDown: turtle.penDown
-  }];
-
-  if(currentRepeat === masterRepeat) {
-    return journey.concat(masterRepeat.execute())
-    .filter((waypoint) => {
-      return waypoint !== null;
-    });
-  } else {
-    throw new Error('Unclosed repeat defined');
-  }
-
-  reset();
-}
-
-/* harmony default export */ __webpack_exports__["default"] = ({reset, setPosition, getPosition, execute});
 
 /***/ }),
 /* 2 */
@@ -356,6 +220,210 @@ const KEYWORDS = [
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Turtle__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Position__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__parse_Parser__ = __webpack_require__(5);
+
+
+
+
+function reset() {
+  __WEBPACK_IMPORTED_MODULE_0__Turtle__["a" /* default */].reset();
+  __WEBPACK_IMPORTED_MODULE_2__parse_Parser__["a" /* default */].reset();
+}
+
+function setPosition(position) {
+  __WEBPACK_IMPORTED_MODULE_0__Turtle__["a" /* default */].position = new __WEBPACK_IMPORTED_MODULE_1__Position__["a" /* default */](position.x, position.y, position.angle);
+  return this;
+}
+
+function getPosition() {
+	return __WEBPACK_IMPORTED_MODULE_0__Turtle__["a" /* default */].position;
+}
+
+function execute(input) {
+  let journey = [__WEBPACK_IMPORTED_MODULE_0__Turtle__["a" /* default */].getCopy()];
+
+  let execution = __WEBPACK_IMPORTED_MODULE_2__parse_Parser__["a" /* default */].parse(input);
+  journey = journey.concat(execution());
+
+  reset();
+
+  return journey;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({reset, setPosition, getPosition, execute});
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Command__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__CommandRegistry__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Parameter__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Repeat__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Routine__ = __webpack_require__(8);
+
+
+
+
+
+
+let currentRepeat, masterRepeat, currentRoutineDefinition;
+
+let routines = {};
+
+const STATE = {
+  EXECUTING_COMMANDS: (word, tokens) => {
+    if(controls[word] !== undefined) {
+      getControlExecution(controls[word], tokens).execute();
+    } else if(__WEBPACK_IMPORTED_MODULE_1__CommandRegistry__["a" /* default */][word] !== undefined) {
+      currentRepeat.executions.push(getCommandExecution(__WEBPACK_IMPORTED_MODULE_1__CommandRegistry__["a" /* default */][word], tokens));
+    } else if(routines[word] !== undefined) {
+      getRoutineExecution(routines[word], tokens);
+    } else {
+      throw new Error(`Control or Command not found: ${word}`);
+    }
+  },
+  DEFINING_ROUTINE_PARAMETERS: (word, tokens) => {
+    if(word !== 'startroutine') {
+      currentRoutineDefinition.parameters.push(word);
+    } else {
+      currentState = STATE.DEFINING_ROUTINE_BODY;
+    }
+  },
+  DEFINING_ROUTINE_BODY: (word, tokens) => {
+    if(word !== 'endroutine') {
+      currentRoutineDefinition.body.push(word);
+    } else {
+      currentState = STATE.EXECUTING_COMMANDS;
+      routines[currentRoutineDefinition.name] = currentRoutineDefinition;
+      currentRoutineDefinition = undefined;
+    }
+  }
+};
+
+let currentState = STATE.EXECUTING_COMMANDS;
+
+let routine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__Parameter__["a" /* default */].NOT_KEYWORD], (name) => {
+  currentRoutineDefinition = new __WEBPACK_IMPORTED_MODULE_4__Routine__["a" /* default */](name);
+  currentState = STATE.DEFINING_ROUTINE_PARAMETERS;
+});
+
+let startroutine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
+  throw new Error('startroutine called without routine');
+});
+
+let endroutine = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
+  throw new Error('endroutine called without routine');
+});
+
+let repeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_2__Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
+  let newRepeat = new __WEBPACK_IMPORTED_MODULE_3__Repeat__["a" /* default */](currentRepeat, frequency);
+  currentRepeat.executions.push(newRepeat);
+  currentRepeat = newRepeat;
+});
+
+let endrepeat = new __WEBPACK_IMPORTED_MODULE_0__Command__["a" /* default */]([], () => {
+  if(currentRepeat.parent === null) {
+    throw new Error('endrepeat called without matching repeat');
+  }
+  currentRepeat = currentRepeat.parent;
+});
+
+let controls = {repeat, endrepeat, routine, startroutine, endroutine};
+
+function instantiateLoops() {
+  currentRepeat = new __WEBPACK_IMPORTED_MODULE_3__Repeat__["a" /* default */](null, 1);
+  masterRepeat = currentRepeat; 
+}
+
+function tokenize(input) {
+  return input.split("\n").join(" ").split(" ");
+}
+
+function getControlExecution(control, tokens) {
+  let parameters = tokens.splice(0, control.parameterSchema.length);
+  return control.createExecution(parameters);
+}
+
+function getCommandExecution(command, tokens) {
+  let parameters = tokens.splice(0, command.parameterSchema.length);
+  return command.createExecution(parameters);
+}
+
+function getRoutineExecution(routine, tokens) {
+  let parameters = tokens.splice(0, routine.parameters.length);
+  generateTurtleExecutions(routine.parseBody(parameters));
+}
+
+function generateTurtleExecutions(tokens) {
+  while(tokens.length > 0) {
+    currentState(tokens.shift(), tokens);
+  }
+}
+
+function reset() {
+  routines = {};
+}
+
+function parse(input) {
+  instantiateLoops();
+  generateTurtleExecutions(tokenize(input));
+
+  if(currentRepeat === masterRepeat) {
+    return () => {
+      return masterRepeat.execute();
+    };
+  } else {
+    throw new Error('Unclosed repeat defined');
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({reset, parse});
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Parameter__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Command__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Turtle__ = __webpack_require__(0);
+
+
+
+
+let forward = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
+  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].move(distance);
+});
+
+let back = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
+  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].move(0 - distance);
+});
+
+let left = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
+  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].rotate(degree);
+});
+
+let right = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
+  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].rotate(0 - degree);
+});
+
+let pen = new __WEBPACK_IMPORTED_MODULE_1__Command__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].UP_DOWN], (pen) => {
+  __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].penDown = (pen === 'down');
+  return __WEBPACK_IMPORTED_MODULE_2__Turtle__["a" /* default */].getCopy();
+});
+
+/* harmony default export */ __webpack_exports__["a"] = ({forward, back, left, right, pen});
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 class Repeat {
   constructor(parent, frequency) {
     this.parent = parent;
@@ -389,53 +457,7 @@ class Repeat {
 
 
 /***/ }),
-/* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Position__ = __webpack_require__(0);
-
-
-class Turtle {
-  constructor(position) {
-    this.position = position;
-    this.penDown = true;
-  }
-
-  getCopy() {
-    return {position: this.position, penDown: this.penDown};
-  }
-
-  move(distance) {
-    let radians = Math.PI * this.position.angle / 180;
-
-    this.position = new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](
-      this.position.x + (distance * Math.sin(radians)),
-      this.position.y + (distance * Math.cos(radians)),
-      this.position.angle
-    );
-    
-    return this.getCopy();
-  }
-
-  rotate(degree) {
-    let angle = this.position.angle + degree;
-
-    this.position = new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](
-      this.position.x,
-      this.position.y,
-      angle
-    );
-
-    return this.getCopy();
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Turtle;
-
-
-
-/***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

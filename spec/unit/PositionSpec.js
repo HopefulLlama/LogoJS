@@ -1,7 +1,13 @@
 describe('Position', () => {
-  it('should be null if there is no position set', () => {
+  beforeEach(() => {
     LogoJS.reset();
-    expect(LogoJS.getPosition()).toBe(null);
+  });
+
+  it('should be default if there is no position set', () => {
+    let position = LogoJS.getPosition();
+    expect(position.x).toBe(0);
+    expect(position.y).toBe(0);
+    expect(position.angle).toBe(180);
   });
 
   it('should have a position once set', () => {
