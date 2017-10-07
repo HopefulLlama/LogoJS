@@ -1,12 +1,9 @@
 import ExecutionStack from './ExecutionStack';
 import Keywords from '../instruction/Keywords';
 import ParseState from './ParseState';
+import Tokenizer from './Tokenizer';
 
 let currentState = ParseState.EXECUTING_COMMANDS;
-
-function tokenize(input) {
-  return input.split("\n").join(" ").split(" ");
-}
 
 function generateExecutions(tokens) {
   while(tokens.length > 0) {
@@ -21,7 +18,7 @@ function reset() {
 
 function parse(input) {
   ExecutionStack.instantiate();
-  generateExecutions(tokenize(input));
+  generateExecutions(Tokenizer.tokenize(input));
 
   return () => {
     return ExecutionStack.execute();

@@ -72,15 +72,13 @@ var LogoJS =
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ExecutionStack__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__instruction_Keywords__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ParseState__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Tokenizer__ = __webpack_require__(17);
+
 
 
 
 
 let currentState = __WEBPACK_IMPORTED_MODULE_2__ParseState__["a" /* default */].EXECUTING_COMMANDS;
-
-function tokenize(input) {
-  return input.split("\n").join(" ").split(" ");
-}
 
 function generateExecutions(tokens) {
   while(tokens.length > 0) {
@@ -95,7 +93,7 @@ function reset() {
 
 function parse(input) {
   __WEBPACK_IMPORTED_MODULE_0__ExecutionStack__["a" /* default */].instantiate();
-  generateExecutions(tokenize(input));
+  generateExecutions(__WEBPACK_IMPORTED_MODULE_3__Tokenizer__["a" /* default */].tokenize(input));
 
   return () => {
     return __WEBPACK_IMPORTED_MODULE_0__ExecutionStack__["a" /* default */].execute();
@@ -686,6 +684,17 @@ class Routine {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Registry__ = __webpack_require__(4);
 
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_0__Registry__["a" /* default */]());
+
+/***/ }),
+/* 17 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+function tokenize(input) {
+  return input.split("\n").join(" ").split(" ");
+}
+
+/* harmony default export */ __webpack_exports__["a"] = ({tokenize});
 
 /***/ })
 /******/ ])["default"];
