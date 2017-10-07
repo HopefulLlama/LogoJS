@@ -5,10 +5,12 @@ import Parser from './parse/Parser';
 function reset() {
   Turtle.reset();
   Parser.reset();
+  return this;
 }
 
 function setPosition(position) {
   Turtle.position = new Position(position.x, position.y, position.angle);
+  return this;
 }
 
 function getPosition() {
