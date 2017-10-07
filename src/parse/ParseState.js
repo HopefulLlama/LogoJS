@@ -1,5 +1,4 @@
-import CommandRegistry from '../instruction/CommandRegistry';
-import ControlRegistry from '../instruction/ControlRegistry';
+import MasterRegistry from '../instruction/registry/MasterRegistry';
 import Keywords from '../instruction/Keywords';
 import ExecutionStack from './ExecutionStack';
 import Parser from './Parser';
@@ -20,12 +19,7 @@ function getRoutineExecution(routine, tokens) {
   Parser.generateExecutions(routine.parseBody(parameters));
 }
 
-let routines = {};
 let currentRoutineDefinition = null;
-
-function getRoutines() {
-  return routines;
-}
 
 function getCurrentRoutineDefinition() {
   return currentRoutineDefinition;
@@ -37,12 +31,12 @@ function setCurrentRoutineDefinition(routine) {
 
 export default {
   EXECUTING_COMMANDS: (word, tokens) => {
-    if(ControlRegistry[word] !== undefined) {
-      getControlExecution(ControlRegistry[word], tokens).execute();
-    } else if(CommandRegistry[word] !== undefined) {
-      ExecutionStack.pushExecution(getInstructionExecution(CommandRegistry[word], tokens));
-    } else if(routines[word] !== undefined) {
-      getRoutineExecution(routines[word], tokens);
+    if(MasterRegistry.control.getItem(word) !== undefined) {
+      getControlExecution(MasterRegistry.control.getItem(word), tokens).execute();
+    } else if(MasterRegistry.command.getItem(word) !== undefined) {
+      ExecutionStack.pushExecution(getInstructionExecution(MasterRegistry.command.getItem(word), tokens));
+    } else if(MasterRegistry.routine.getItem(word) !== undefined) {
+      getRoutineExecution(MasterRegistry.routine.getItem(word), tokens);
     } else {
       throw new Error(`Control or Command not found: ${word}`);
     }
@@ -59,12 +53,12 @@ export default {
   DEFINING_ROUTINE_BODY: (word, tokens) => {
     if(word === Keywords.ENDROUTINE) {
       Parser.setCurrentState(ParseState.EXECUTING_COMMANDS);
-      routines[currentRoutineDefinition.name] = currentRoutineDefinition;
+      MasterRegistry.routine.setItem(currentRoutineDefinition.name, currentRoutineDefinition);
       currentRoutineDefinition = null;
     } else {
       currentRoutineDefinition.body.push(word);
     }
   }, 
-  getRoutines,
+  getCurrentRoutineDefinition,
   setCurrentRoutineDefinition
 };
