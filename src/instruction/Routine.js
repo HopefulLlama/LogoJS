@@ -8,10 +8,10 @@ function createParameterValueMap(values, parameters) {
 }
 
 export default class Routine {
-  constructor(name) {
+  constructor(name, parameters, body) {
     this.name = name;
-    this.parameters = [];
-    this.body = [];
+    this.parameters = parameters;
+    this.body = body;
   }  
 
   parseBody(values) {

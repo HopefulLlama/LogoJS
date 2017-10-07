@@ -1,4 +1,5 @@
 import MasterRegistry from '../instruction/registry/MasterRegistry';
+import RoutineGenerator from '../instruction/RoutineGenerator';
 import Keywords from '../instruction/Keywords';
 import ExecutionStack from './ExecutionStack';
 import Parser from './Parser';
@@ -19,16 +20,6 @@ function getRoutineExecution(routine, tokens) {
   Parser.generateExecutions(routine.parseBody(parameters));
 }
 
-let currentRoutineDefinition = null;
-
-function getCurrentRoutineDefinition() {
-  return currentRoutineDefinition;
-}
-
-function setCurrentRoutineDefinition(routine) {
-  currentRoutineDefinition = routine;
-}
-
 export default {
   EXECUTING_COMMANDS: (word, tokens) => {
     if(MasterRegistry.control.getItem(word) !== undefined) {
@@ -47,18 +38,16 @@ export default {
     } else if(Object.values(Keywords).indexOf(word) !== -1) {
       throw new Error(`Keyword ${word} not allowed as routine parameter`);
     } else {
-      currentRoutineDefinition.parameters.push(word);
+      RoutineGenerator.addParameter(word);
     }
   },
   DEFINING_ROUTINE_BODY: (word, tokens) => {
     if(word === Keywords.ENDROUTINE) {
       Parser.setCurrentState(ParseState.EXECUTING_COMMANDS);
-      MasterRegistry.routine.setItem(currentRoutineDefinition.name, currentRoutineDefinition);
-      currentRoutineDefinition = null;
+      let routine = RoutineGenerator.generateRoutine();
+      MasterRegistry.routine.setItem(routine.name, routine);
     } else {
-      currentRoutineDefinition.body.push(word);
+      RoutineGenerator.addToBody(word);
     }
-  }, 
-  getCurrentRoutineDefinition,
-  setCurrentRoutineDefinition
+  }
 };
