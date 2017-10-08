@@ -11,6 +11,7 @@ const sequence = require('gulp-sequence');
 const uglify = require('gulp-uglify-es').default;
 const gulpWebpack = require('gulp-webpack');
 const webpack = require('webpack');
+const tslint = require('gulp-tslint');
 
 const OUTPUT_FILE = 'LogoApp.js';
 const OUTPUT_DIR = 'public/bin';
@@ -21,7 +22,7 @@ function copyFile(srcFile, destFile) {
 
 gulp.task('default', sequence('test'));
 gulp.task('test', sequence('build', 'unit-test', 'unit-test:min'));
-gulp.task('build', sequence('lint', 'webpack', 'compress-logo-js', 'copy'));
+gulp.task('build', sequence('tslint', 'webpack', 'compress-logo-js', 'copy'));
 gulp.task('build-app', sequence('lint-app', 'concat', 'compress-logo-app'));
 
 gulp.task('copy', () => {
@@ -80,14 +81,12 @@ gulp.task('concat', () => {
   .pipe(gulp.dest(OUTPUT_DIR));
 });
 
-gulp.task('lint', () => {
-  return gulp.src([
-    'src/**/*.js',
-    'spec/**/*.js',
-  ])
-  .pipe(jshint())
-  .pipe(jshint.reporter('default'))
-  .pipe(jshint.reporter('fail'));
+gulp.task('tslint', () => {
+  return gulp.src("src/**/*.js")
+  .pipe(tslint({
+      formatter: "verbose"
+  }))
+  .pipe(tslint.report());
 });
 
 gulp.task('lint-app', () => {
