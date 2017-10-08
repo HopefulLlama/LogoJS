@@ -1,10 +1,11 @@
-import Parameter from './Parameter';
+import Parameter from '../parameter/Parameter';
+import Executeable from './Executeable';
 
 export default class Instruction {
-  parameterSchema: any[];
+  parameterSchema: Parameter[];
   execute: Function;
 
-  constructor(parameterSchema: any[], execute: Function) {
+  constructor(parameterSchema: Parameter[], execute: Function) {
     this.parameterSchema = parameterSchema;
     this.execute = execute;
   }
@@ -17,16 +18,16 @@ export default class Instruction {
     );
   }
 
-  createExecution(parameters: any[]): any {
+  createExecution(parameters: any[]): Executeable {
     if(this.valid(parameters)) {
-      return {
-        execute: () => {
-          parameters = parameters.map((parameter, index) => {
-            return this.parameterSchema[index].transform(parameter);
-          });
-          return this.execute(...parameters);
-        }
-      };
+
+      return new Executeable(() => {
+        parameters = parameters.map((parameter, index) => {
+          return this.parameterSchema[index].transform(parameter);
+        });
+        return this.execute(...parameters);
+      });
+      
     } else {
       throw new Error(`Invalid parameters: ${parameters}`);
     }

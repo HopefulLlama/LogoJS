@@ -73,7 +73,7 @@ var LogoJS =
 exports.__esModule = true;
 var ExecutionStack_1 = __webpack_require__(1);
 var ParseState_1 = __webpack_require__(2);
-var Tokenizer_1 = __webpack_require__(17);
+var Tokenizer_1 = __webpack_require__(19);
 var MasterRegistry_1 = __webpack_require__(6);
 var currentState = ParseState_1["default"].EXECUTING_COMMANDS;
 function generateExecutions(tokens) {
@@ -299,8 +299,8 @@ exports["default"] = Position;
 
 exports.__esModule = true;
 var CommandRegistry_1 = __webpack_require__(13);
-var ControlRegistry_1 = __webpack_require__(14);
-var RoutineRegistry_1 = __webpack_require__(16);
+var ControlRegistry_1 = __webpack_require__(16);
+var RoutineRegistry_1 = __webpack_require__(18);
 function getAllKeys() {
     return CommandRegistry_1["default"].getKeys().concat(ControlRegistry_1["default"].getKeys(), RoutineRegistry_1["default"].getKeys());
 }
@@ -320,25 +320,19 @@ exports["default"] = {
 
 exports.__esModule = true;
 var Keywords_1 = __webpack_require__(8);
-var Parameter = /** @class */ (function () {
-    function Parameter(validate, transform) {
-        this.validate = validate;
-        this.transform = transform;
-    }
-    return Parameter;
-}());
+var Parameter_1 = __webpack_require__(14);
 exports["default"] = {
-    FINITE_NUMBER: new Parameter(function (parameter) {
+    FINITE_NUMBER: new Parameter_1["default"](function (parameter) {
         return isFinite(parameter);
     }, function (parameter) {
         return parseFloat(parameter);
     }),
-    UP_DOWN: new Parameter(function (parameter) {
+    UP_DOWN: new Parameter_1["default"](function (parameter) {
         return parameter === Keywords_1["default"].UP || parameter === Keywords_1["default"].DOWN;
     }, function (parameter) {
         return parameter.toString();
     }),
-    NOT_KEYWORD: new Parameter(function (parameter) {
+    NOT_KEYWORD: new Parameter_1["default"](function (parameter) {
         return /^[a-z].*/.test(parameter) && Object.values(Keywords_1["default"]).indexOf(parameter) === -1;
     }, function (parameter) {
         return parameter.toString();
@@ -375,6 +369,7 @@ exports["default"] = {
 "use strict";
 
 exports.__esModule = true;
+var Executeable_1 = __webpack_require__(15);
 var Instruction = /** @class */ (function () {
     function Instruction(parameterSchema, execute) {
         this.parameterSchema = parameterSchema;
@@ -389,14 +384,12 @@ var Instruction = /** @class */ (function () {
     Instruction.prototype.createExecution = function (parameters) {
         var _this = this;
         if (this.valid(parameters)) {
-            return {
-                execute: function () {
-                    parameters = parameters.map(function (parameter, index) {
-                        return _this.parameterSchema[index].transform(parameter);
-                    });
-                    return _this.execute.apply(_this, parameters);
-                }
-            };
+            return new Executeable_1["default"](function () {
+                parameters = parameters.map(function (parameter, index) {
+                    return _this.parameterSchema[index].transform(parameter);
+                });
+                return _this.execute.apply(_this, parameters);
+            });
         }
         else {
             throw new Error("Invalid parameters: " + parameters);
@@ -414,7 +407,7 @@ exports["default"] = Instruction;
 "use strict";
 
 exports.__esModule = true;
-var Routine_1 = __webpack_require__(15);
+var Routine_1 = __webpack_require__(17);
 var name, parameters, body;
 var RoutineGenerator = /** @class */ (function () {
     function RoutineGenerator() {
@@ -529,24 +522,24 @@ exports["default"] = Repeat;
 "use strict";
 
 exports.__esModule = true;
-var Parameter_1 = __webpack_require__(7);
+var ParameterMap_1 = __webpack_require__(7);
 var Instruction_1 = __webpack_require__(9);
 var Turtle_1 = __webpack_require__(4);
 var Registry_1 = __webpack_require__(3);
 var registry = new Registry_1["default"]();
-registry.setItem('forward', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (distance) {
+registry.setItem('forward', new Instruction_1["default"]([ParameterMap_1["default"].FINITE_NUMBER], function (distance) {
     return Turtle_1["default"].move(distance);
 }));
-registry.setItem('back', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (distance) {
+registry.setItem('back', new Instruction_1["default"]([ParameterMap_1["default"].FINITE_NUMBER], function (distance) {
     return Turtle_1["default"].move(0 - distance);
 }));
-registry.setItem('left', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (degree) {
+registry.setItem('left', new Instruction_1["default"]([ParameterMap_1["default"].FINITE_NUMBER], function (degree) {
     return Turtle_1["default"].rotate(degree);
 }));
-registry.setItem('right', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (degree) {
+registry.setItem('right', new Instruction_1["default"]([ParameterMap_1["default"].FINITE_NUMBER], function (degree) {
     return Turtle_1["default"].rotate(0 - degree);
 }));
-registry.setItem('pen', new Instruction_1["default"]([Parameter_1["default"].UP_DOWN], function (pen) {
+registry.setItem('pen', new Instruction_1["default"]([ParameterMap_1["default"].UP_DOWN], function (pen) {
     Turtle_1["default"].penDown = (pen === 'down');
     return Turtle_1["default"].getCopy();
 }));
@@ -560,7 +553,40 @@ exports["default"] = registry;
 "use strict";
 
 exports.__esModule = true;
-var Parameter_1 = __webpack_require__(7);
+var Parameter = /** @class */ (function () {
+    function Parameter(validate, transform) {
+        this.validate = validate;
+        this.transform = transform;
+    }
+    return Parameter;
+}());
+exports["default"] = Parameter;
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var Executeable = /** @class */ (function () {
+    function Executeable(execute) {
+        this.execute = execute;
+    }
+    return Executeable;
+}());
+exports["default"] = Executeable;
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+exports.__esModule = true;
+var ParameterMap_1 = __webpack_require__(7);
 var Instruction_1 = __webpack_require__(9);
 var ParseState_1 = __webpack_require__(2);
 var Parser_1 = __webpack_require__(0);
@@ -568,7 +594,7 @@ var ExecutionStack_1 = __webpack_require__(1);
 var Registry_1 = __webpack_require__(3);
 var RoutineGenerator_1 = __webpack_require__(10);
 var registry = new Registry_1["default"]();
-registry.setItem('routine', new Instruction_1["default"]([Parameter_1["default"].NOT_KEYWORD], function (name) {
+registry.setItem('routine', new Instruction_1["default"]([ParameterMap_1["default"].NOT_KEYWORD], function (name) {
     RoutineGenerator_1["default"].start();
     RoutineGenerator_1["default"].setName(name);
     Parser_1["default"].setCurrentState(ParseState_1["default"].DEFINING_ROUTINE_PARAMETERS);
@@ -579,7 +605,7 @@ registry.setItem('startroutine', new Instruction_1["default"]([], function () {
 registry.setItem('endroutine', new Instruction_1["default"]([], function () {
     throw new Error('endroutine called without routine');
 }));
-registry.setItem('repeat', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (frequency) {
+registry.setItem('repeat', new Instruction_1["default"]([ParameterMap_1["default"].FINITE_NUMBER], function (frequency) {
     ExecutionStack_1["default"].pushNewRepeat(frequency);
 }));
 registry.setItem('endrepeat', new Instruction_1["default"]([], function () {
@@ -589,7 +615,7 @@ exports["default"] = registry;
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -626,7 +652,7 @@ exports["default"] = Routine;
 
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -637,7 +663,7 @@ exports["default"] = new Registry_1["default"]();
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

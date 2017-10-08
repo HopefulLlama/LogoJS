@@ -1,4 +1,4 @@
-import MasterRegistry from '../instruction/registry/MasterRegistry';
+import MasterRegistry from '../registry/MasterRegistry';
 import RoutineGenerator from '../instruction/RoutineGenerator';
 import Keywords from '../instruction/Keywords';
 import ExecutionStack from './ExecutionStack';

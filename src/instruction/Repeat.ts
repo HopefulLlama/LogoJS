@@ -3,7 +3,7 @@ export default class Repeat {
   frequency: number;
   executions: Object[];
 
-  constructor(parent: any, frequency: number) {
+  constructor(parent: Repeat, frequency: number) {
     this.parent = parent;
     this.frequency = frequency;
     this.executions = [];

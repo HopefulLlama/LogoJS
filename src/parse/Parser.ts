@@ -2,7 +2,7 @@ import ExecutionStack from './ExecutionStack';
 import Keywords from '../instruction/Keywords';
 import ParseState from './ParseState';
 import Tokenizer from './Tokenizer';
-import MasterRegistry from '../instruction/registry/MasterRegistry';
+import MasterRegistry from '../registry/MasterRegistry';
 
 let currentState: Function = ParseState.EXECUTING_COMMANDS;
 

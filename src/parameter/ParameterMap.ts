@@ -1,14 +1,5 @@
-import Keywords from './Keywords';
-
-class Parameter {
-  validate: Function;
-  transform: Function;
-
-  constructor(validate: Function, transform: Function) {
-    this.validate = validate;
-    this.transform = transform;
-  }
-}
+import Keywords from '../instruction/Keywords';
+import Parameter from './Parameter';
 
 export default {
   FINITE_NUMBER: new Parameter((parameter: number): boolean => {
