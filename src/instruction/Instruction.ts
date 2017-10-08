@@ -1,10 +1,15 @@
+import Parameter from './Parameter';
+
 export default class Instruction {
-  constructor(parameterSchema, execute) {
+  parameterSchema: any[];
+  execute: Function;
+
+  constructor(parameterSchema: any[], execute: Function) {
     this.parameterSchema = parameterSchema;
     this.execute = execute;
   }
 
-  valid(parameters) {
+  valid(parameters: any[]): boolean {
     return (this.parameterSchema.length === parameters.length && 
       this.parameterSchema.every((item, index) => {
         return item.validate(parameters[index]);
@@ -12,7 +17,7 @@ export default class Instruction {
     );
   }
 
-  createExecution(parameters) {
+  createExecution(parameters: any[]): any {
     if(this.valid(parameters)) {
       return {
         execute: () => {

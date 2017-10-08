@@ -5,23 +5,23 @@ import ExecutionStack from './ExecutionStack';
 import Parser from './Parser';
 import ParseState from './ParseState';
 
-function getControlExecution(control, tokens) {
+function getControlExecution(control: any, tokens: string[]): any {
   let parameters = tokens.splice(0, control.parameterSchema.length);
   return control.createExecution(parameters);
 }
 
-function getInstructionExecution(command, tokens) {
+function getInstructionExecution(command: any, tokens: string[]): any {
   let parameters = tokens.splice(0, command.parameterSchema.length);
   return command.createExecution(parameters);
 }
 
-function getRoutineExecution(routine, tokens) {
+function getRoutineExecution(routine: any, tokens: string[]): any {
   let parameters = tokens.splice(0, routine.parameters.length);
   Parser.generateExecutions(routine.parseBody(parameters));
 }
 
 export default {
-  EXECUTING_COMMANDS: (word, tokens) => {
+  EXECUTING_COMMANDS: (word: string, tokens: string[]) => {
     if(MasterRegistry.control.getItem(word) !== undefined) {
       getControlExecution(MasterRegistry.control.getItem(word), tokens).execute();
     } else if(MasterRegistry.command.getItem(word) !== undefined) {
@@ -32,7 +32,7 @@ export default {
       throw new Error(`Control or Command not found: ${word}`);
     }
   },
-  DEFINING_ROUTINE_PARAMETERS: (word, tokens) => {
+  DEFINING_ROUTINE_PARAMETERS: (word: string, tokens: string[]) => {
     if(word === Keywords.STARTROUTINE) {
       Parser.setCurrentState(ParseState.DEFINING_ROUTINE_BODY);
     } else if(Object.values(Keywords).indexOf(word) !== -1) {
@@ -41,7 +41,7 @@ export default {
       RoutineGenerator.addParameter(word);
     }
   },
-  DEFINING_ROUTINE_BODY: (word, tokens) => {
+  DEFINING_ROUTINE_BODY: (word: string, tokens: string[]) => {
     if(word === Keywords.ENDROUTINE) {
       Parser.setCurrentState(ParseState.EXECUTING_COMMANDS);
       let routine = RoutineGenerator.generateRoutine();

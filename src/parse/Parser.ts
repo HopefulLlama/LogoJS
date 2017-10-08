@@ -2,21 +2,22 @@ import ExecutionStack from './ExecutionStack';
 import Keywords from '../instruction/Keywords';
 import ParseState from './ParseState';
 import Tokenizer from './Tokenizer';
+import MasterRegistry from '../instruction/registry/MasterRegistry';
 
-let currentState = ParseState.EXECUTING_COMMANDS;
+let currentState: Function = ParseState.EXECUTING_COMMANDS;
 
-function generateExecutions(tokens) {
+function generateExecutions(tokens: string[]): void {
   while(tokens.length > 0) {
     currentState(tokens.shift(), tokens);
   }
 }
 
-function reset() {
-  ParseState.routines = {};
+function reset(): void {
+  MasterRegistry.routine.reset();
   currentState = ParseState.EXECUTING_COMMANDS;
 }
 
-function parse(input) {
+function parse(input: string): Function {
   ExecutionStack.instantiate();
   generateExecutions(Tokenizer.tokenize(input));
 
@@ -25,7 +26,7 @@ function parse(input) {
   };
 }
 
-function setCurrentState(state) {
+function setCurrentState(state: Function): void {
   currentState = state;
 }
 

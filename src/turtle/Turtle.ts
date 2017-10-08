@@ -1,20 +1,23 @@
 import Position from './Position';
 
 class Turtle {
-  constructor(position, penDown) {
+  position: Position;
+  penDown: boolean;
+
+  constructor(position: Position, penDown: boolean) {
     this.reset(position, penDown);
   }
 
-  reset(position, penDown) {
-    this.position = (position !== undefined) ? position : new Position(0, 0, 180);
-    this.penDown = (penDown !== undefined) ? penDown : true;
+  reset(position: Position, penDown: boolean): void {
+    this.position = position;
+    this.penDown = penDown;
   }
 
-  getCopy() {
+  getCopy(): Object {
     return {position: this.position, penDown: this.penDown};
   }
 
-  move(distance) {
+  move(distance: number): Object {
     let radians = Math.PI * this.position.angle / 180;
 
     this.position = new Position(
@@ -26,7 +29,7 @@ class Turtle {
     return this.getCopy();
   }
 
-  rotate(degree) {
+  rotate(degree: number): Object {
     let angle = this.position.angle + degree;
 
     this.position = new Position(
@@ -39,4 +42,4 @@ class Turtle {
   }
 }
 
-export default new Turtle();
+export default new Turtle(new Position(0, 0, 180), true);

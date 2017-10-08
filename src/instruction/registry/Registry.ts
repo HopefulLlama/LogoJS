@@ -1,17 +1,23 @@
 export default class Registry {
+  register: any;
+
   constructor() {
     this.register = {};
   }
 
-  setItem(name, item) {
+  setItem(name: string, item: any): void {
     this.register[name] = item;
   }
 
-  getItem(name) {
+  getItem(name: string): any {
     return this.register[name];
   }
 
-  getKeys() {
+  getKeys(): string[] {
     return Object.keys(this.register);
+  }
+
+  reset(): void {
+    this.register = {};
   }
 }

@@ -1,4 +1,4 @@
-function createParameterValueMap(values, parameters) {
+function createParameterValueMap(values: any[], parameters: any[]): any {
   if(values.length === parameters.length) {
     return parameters.reduce((accumulator, parameterName, index) => {
       accumulator[parameterName] = values[index];
@@ -8,13 +8,17 @@ function createParameterValueMap(values, parameters) {
 }
 
 export default class Routine {
-  constructor(name, parameters, body) {
+  name: string;
+  parameters: string[];
+  body: string[];
+
+  constructor(name: string, parameters: string[], body: string[]) {
     this.name = name;
     this.parameters = parameters;
     this.body = body;
   }  
 
-  parseBody(values) {
+  parseBody(values: any[]): string[] {
     let parameterValues = createParameterValueMap(values, this.parameters);
 
     return this.body.map((word) => {

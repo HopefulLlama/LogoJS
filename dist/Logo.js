@@ -61,640 +61,593 @@ var LogoJS =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ExecutionStack__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__instruction_Keywords__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ParseState__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Tokenizer__ = __webpack_require__(17);
 
-
-
-
-
-let currentState = __WEBPACK_IMPORTED_MODULE_2__ParseState__["a" /* default */].EXECUTING_COMMANDS;
-
+exports.__esModule = true;
+var ExecutionStack_1 = __webpack_require__(1);
+var ParseState_1 = __webpack_require__(2);
+var Tokenizer_1 = __webpack_require__(17);
+var MasterRegistry_1 = __webpack_require__(6);
+var currentState = ParseState_1["default"].EXECUTING_COMMANDS;
 function generateExecutions(tokens) {
-  while(tokens.length > 0) {
-    currentState(tokens.shift(), tokens);
-  }
+    while (tokens.length > 0) {
+        currentState(tokens.shift(), tokens);
+    }
 }
-
 function reset() {
-  __WEBPACK_IMPORTED_MODULE_2__ParseState__["a" /* default */].routines = {};
-  currentState = __WEBPACK_IMPORTED_MODULE_2__ParseState__["a" /* default */].EXECUTING_COMMANDS;
+    MasterRegistry_1["default"].routine.reset();
+    currentState = ParseState_1["default"].EXECUTING_COMMANDS;
 }
-
 function parse(input) {
-  __WEBPACK_IMPORTED_MODULE_0__ExecutionStack__["a" /* default */].instantiate();
-  generateExecutions(__WEBPACK_IMPORTED_MODULE_3__Tokenizer__["a" /* default */].tokenize(input));
-
-  return () => {
-    return __WEBPACK_IMPORTED_MODULE_0__ExecutionStack__["a" /* default */].execute();
-  };
+    ExecutionStack_1["default"].instantiate();
+    generateExecutions(Tokenizer_1["default"].tokenize(input));
+    return function () {
+        return ExecutionStack_1["default"].execute();
+    };
 }
-
 function setCurrentState(state) {
-  currentState = state;
+    currentState = state;
 }
+exports["default"] = { reset: reset, parse: parse, setCurrentState: setCurrentState, generateExecutions: generateExecutions };
 
-/* harmony default export */ __webpack_exports__["a"] = ({reset, parse, setCurrentState, generateExecutions});
 
 /***/ }),
 /* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_Repeat__ = __webpack_require__(11);
 
-
-class ExecutionStack {
-  constructor() {
-    this.instantiate();
-  }
-
-  instantiate() {
-    this.currentRepeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Repeat__["a" /* default */](null, 1);
-    this.masterRepeat = this.currentRepeat;
-  }
-
-  pushExecution(execution) {
-    this.currentRepeat.executions.push(execution);
-  }
-
-  pushNewRepeat(frequency) {
-    let newRepeat = new __WEBPACK_IMPORTED_MODULE_0__instruction_Repeat__["a" /* default */](this.currentRepeat, frequency);
-    this.pushExecution(newRepeat);
-    this.currentRepeat = newRepeat;
-  }
-
-  closeCurrentRepeat() {
-    if(this.currentRepeat.parent === null) {
-      throw new Error('endrepeat called without matching repeat');
-    } else {
-      this.currentRepeat = this.currentRepeat.parent;
+exports.__esModule = true;
+var Repeat_1 = __webpack_require__(12);
+var ExecutionStack = /** @class */ (function () {
+    function ExecutionStack() {
+        this.instantiate();
     }
-  }
+    ExecutionStack.prototype.instantiate = function () {
+        this.currentRepeat = new Repeat_1["default"](null, 1);
+        this.masterRepeat = this.currentRepeat;
+    };
+    ExecutionStack.prototype.pushExecution = function (execution) {
+        this.currentRepeat.executions.push(execution);
+    };
+    ExecutionStack.prototype.pushNewRepeat = function (frequency) {
+        var newRepeat = new Repeat_1["default"](this.currentRepeat, frequency);
+        this.pushExecution(newRepeat);
+        this.currentRepeat = newRepeat;
+    };
+    ExecutionStack.prototype.closeCurrentRepeat = function () {
+        if (this.currentRepeat.parent === null) {
+            throw new Error('endrepeat called without matching repeat');
+        }
+        else {
+            this.currentRepeat = this.currentRepeat.parent;
+        }
+    };
+    ExecutionStack.prototype.execute = function () {
+        if (this.currentRepeat === this.masterRepeat) {
+            return this.masterRepeat.execute();
+        }
+        else {
+            throw new Error('Unclosed repeat defined');
+        }
+    };
+    return ExecutionStack;
+}());
+exports["default"] = new ExecutionStack();
 
-  execute() {
-    if(this.currentRepeat === this.masterRepeat) {
-      return this.masterRepeat.execute();
-    } else {
-      throw new Error('Unclosed repeat defined');
-    }
-  }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (new ExecutionStack());
 
 /***/ }),
 /* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  FORWARD: 'forward',
-  BACK: 'back',
-  LEFT: 'left',
-  RIGHT: 'right',
-  ROUTINE: 'routine',
-  STARTROUTINE: 'startroutine',
-  ENDROUTINE: 'endroutine',
-  REPEAT: 'repeat',
-  ENDREPEAT: 'endrepeat',
-  UP: 'up',
-  DOWN: 'down'
-});
+
+exports.__esModule = true;
+var MasterRegistry_1 = __webpack_require__(6);
+var RoutineGenerator_1 = __webpack_require__(10);
+var Keywords_1 = __webpack_require__(8);
+var ExecutionStack_1 = __webpack_require__(1);
+var Parser_1 = __webpack_require__(0);
+var ParseState_1 = __webpack_require__(2);
+function getControlExecution(control, tokens) {
+    var parameters = tokens.splice(0, control.parameterSchema.length);
+    return control.createExecution(parameters);
+}
+function getInstructionExecution(command, tokens) {
+    var parameters = tokens.splice(0, command.parameterSchema.length);
+    return command.createExecution(parameters);
+}
+function getRoutineExecution(routine, tokens) {
+    var parameters = tokens.splice(0, routine.parameters.length);
+    Parser_1["default"].generateExecutions(routine.parseBody(parameters));
+}
+exports["default"] = {
+    EXECUTING_COMMANDS: function (word, tokens) {
+        if (MasterRegistry_1["default"].control.getItem(word) !== undefined) {
+            getControlExecution(MasterRegistry_1["default"].control.getItem(word), tokens).execute();
+        }
+        else if (MasterRegistry_1["default"].command.getItem(word) !== undefined) {
+            ExecutionStack_1["default"].pushExecution(getInstructionExecution(MasterRegistry_1["default"].command.getItem(word), tokens));
+        }
+        else if (MasterRegistry_1["default"].routine.getItem(word) !== undefined) {
+            getRoutineExecution(MasterRegistry_1["default"].routine.getItem(word), tokens);
+        }
+        else {
+            throw new Error("Control or Command not found: " + word);
+        }
+    },
+    DEFINING_ROUTINE_PARAMETERS: function (word, tokens) {
+        if (word === Keywords_1["default"].STARTROUTINE) {
+            Parser_1["default"].setCurrentState(ParseState_1["default"].DEFINING_ROUTINE_BODY);
+        }
+        else if (Object.values(Keywords_1["default"]).indexOf(word) !== -1) {
+            throw new Error("Keyword " + word + " not allowed as routine parameter");
+        }
+        else {
+            RoutineGenerator_1["default"].addParameter(word);
+        }
+    },
+    DEFINING_ROUTINE_BODY: function (word, tokens) {
+        if (word === Keywords_1["default"].ENDROUTINE) {
+            Parser_1["default"].setCurrentState(ParseState_1["default"].EXECUTING_COMMANDS);
+            var routine = RoutineGenerator_1["default"].generateRoutine();
+            MasterRegistry_1["default"].routine.setItem(routine.name, routine);
+        }
+        else {
+            RoutineGenerator_1["default"].addToBody(word);
+        }
+    }
+};
+
 
 /***/ }),
 /* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__instruction_registry_MasterRegistry__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__instruction_RoutineGenerator__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__instruction_Keywords__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ExecutionStack__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Parser__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__ParseState__ = __webpack_require__(3);
 
-
-
-
-
-
-
-function getControlExecution(control, tokens) {
-  let parameters = tokens.splice(0, control.parameterSchema.length);
-  return control.createExecution(parameters);
-}
-
-function getInstructionExecution(command, tokens) {
-  let parameters = tokens.splice(0, command.parameterSchema.length);
-  return command.createExecution(parameters);
-}
-
-function getRoutineExecution(routine, tokens) {
-  let parameters = tokens.splice(0, routine.parameters.length);
-  __WEBPACK_IMPORTED_MODULE_4__Parser__["a" /* default */].generateExecutions(routine.parseBody(parameters));
-}
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-  EXECUTING_COMMANDS: (word, tokens) => {
-    if(__WEBPACK_IMPORTED_MODULE_0__instruction_registry_MasterRegistry__["a" /* default */].control.getItem(word) !== undefined) {
-      getControlExecution(__WEBPACK_IMPORTED_MODULE_0__instruction_registry_MasterRegistry__["a" /* default */].control.getItem(word), tokens).execute();
-    } else if(__WEBPACK_IMPORTED_MODULE_0__instruction_registry_MasterRegistry__["a" /* default */].command.getItem(word) !== undefined) {
-      __WEBPACK_IMPORTED_MODULE_3__ExecutionStack__["a" /* default */].pushExecution(getInstructionExecution(__WEBPACK_IMPORTED_MODULE_0__instruction_registry_MasterRegistry__["a" /* default */].command.getItem(word), tokens));
-    } else if(__WEBPACK_IMPORTED_MODULE_0__instruction_registry_MasterRegistry__["a" /* default */].routine.getItem(word) !== undefined) {
-      getRoutineExecution(__WEBPACK_IMPORTED_MODULE_0__instruction_registry_MasterRegistry__["a" /* default */].routine.getItem(word), tokens);
-    } else {
-      throw new Error(`Control or Command not found: ${word}`);
+exports.__esModule = true;
+var Registry = /** @class */ (function () {
+    function Registry() {
+        this.register = {};
     }
-  },
-  DEFINING_ROUTINE_PARAMETERS: (word, tokens) => {
-    if(word === __WEBPACK_IMPORTED_MODULE_2__instruction_Keywords__["a" /* default */].STARTROUTINE) {
-      __WEBPACK_IMPORTED_MODULE_4__Parser__["a" /* default */].setCurrentState(__WEBPACK_IMPORTED_MODULE_5__ParseState__["a" /* default */].DEFINING_ROUTINE_BODY);
-    } else if(Object.values(__WEBPACK_IMPORTED_MODULE_2__instruction_Keywords__["a" /* default */]).indexOf(word) !== -1) {
-      throw new Error(`Keyword ${word} not allowed as routine parameter`);
-    } else {
-      __WEBPACK_IMPORTED_MODULE_1__instruction_RoutineGenerator__["a" /* default */].addParameter(word);
-    }
-  },
-  DEFINING_ROUTINE_BODY: (word, tokens) => {
-    if(word === __WEBPACK_IMPORTED_MODULE_2__instruction_Keywords__["a" /* default */].ENDROUTINE) {
-      __WEBPACK_IMPORTED_MODULE_4__Parser__["a" /* default */].setCurrentState(__WEBPACK_IMPORTED_MODULE_5__ParseState__["a" /* default */].EXECUTING_COMMANDS);
-      let routine = __WEBPACK_IMPORTED_MODULE_1__instruction_RoutineGenerator__["a" /* default */].generateRoutine();
-      __WEBPACK_IMPORTED_MODULE_0__instruction_registry_MasterRegistry__["a" /* default */].routine.setItem(routine.name, routine);
-    } else {
-      __WEBPACK_IMPORTED_MODULE_1__instruction_RoutineGenerator__["a" /* default */].addToBody(word);
-    }
-  }
-});
+    Registry.prototype.setItem = function (name, item) {
+        this.register[name] = item;
+    };
+    Registry.prototype.getItem = function (name) {
+        return this.register[name];
+    };
+    Registry.prototype.getKeys = function () {
+        return Object.keys(this.register);
+    };
+    Registry.prototype.reset = function () {
+        this.register = {};
+    };
+    return Registry;
+}());
+exports["default"] = Registry;
+
 
 /***/ }),
 /* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-class Registry {
-  constructor() {
-    this.register = {};
-  }
 
-  setItem(name, item) {
-    this.register[name] = item;
-  }
-
-  getItem(name) {
-    return this.register[name];
-  }
-
-  getKeys() {
-    return Object.keys(this.register);
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Registry;
+exports.__esModule = true;
+var Position_1 = __webpack_require__(5);
+var Turtle = /** @class */ (function () {
+    function Turtle(position, penDown) {
+        this.reset(position, penDown);
+    }
+    Turtle.prototype.reset = function (position, penDown) {
+        this.position = position;
+        this.penDown = penDown;
+    };
+    Turtle.prototype.getCopy = function () {
+        return { position: this.position, penDown: this.penDown };
+    };
+    Turtle.prototype.move = function (distance) {
+        var radians = Math.PI * this.position.angle / 180;
+        this.position = new Position_1["default"](this.position.x + (distance * Math.sin(radians)), this.position.y + (distance * Math.cos(radians)), this.position.angle);
+        return this.getCopy();
+    };
+    Turtle.prototype.rotate = function (degree) {
+        var angle = this.position.angle + degree;
+        this.position = new Position_1["default"](this.position.x, this.position.y, angle);
+        return this.getCopy();
+    };
+    return Turtle;
+}());
+exports["default"] = new Turtle(new Position_1["default"](0, 0, 180), true);
 
 
 /***/ }),
 /* 5 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Position__ = __webpack_require__(6);
 
+exports.__esModule = true;
+var Position = /** @class */ (function () {
+    function Position(x, y, angle) {
+        this.x = x;
+        this.y = y;
+        angle = angle % 360;
+        if (angle < 0) {
+            angle += 360;
+        }
+        this.angle = angle;
+    }
+    return Position;
+}());
+exports["default"] = Position;
 
-class Turtle {
-  constructor(position, penDown) {
-    this.reset(position, penDown);
-  }
-
-  reset(position, penDown) {
-    this.position = (position !== undefined) ? position : new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](0, 0, 180);
-    this.penDown = (penDown !== undefined) ? penDown : true;
-  }
-
-  getCopy() {
-    return {position: this.position, penDown: this.penDown};
-  }
-
-  move(distance) {
-    let radians = Math.PI * this.position.angle / 180;
-
-    this.position = new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](
-      this.position.x + (distance * Math.sin(radians)),
-      this.position.y + (distance * Math.cos(radians)),
-      this.position.angle
-    );
-    
-    return this.getCopy();
-  }
-
-  rotate(degree) {
-    let angle = this.position.angle + degree;
-
-    this.position = new __WEBPACK_IMPORTED_MODULE_0__Position__["a" /* default */](
-      this.position.x,
-      this.position.y,
-      angle
-    );
-
-    return this.getCopy();
-  }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (new Turtle());
 
 /***/ }),
 /* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-class Position {
-  constructor(x, y, angle) {
-    this.x = x;
-    this.y = y;
-    
-    angle = angle % 360;
-    if (angle < 0) {
-      angle += 360;
-    }
-    this.angle = angle;
-  }
+
+exports.__esModule = true;
+var CommandRegistry_1 = __webpack_require__(13);
+var ControlRegistry_1 = __webpack_require__(14);
+var RoutineRegistry_1 = __webpack_require__(16);
+function getAllKeys() {
+    return CommandRegistry_1["default"].getKeys().concat(ControlRegistry_1["default"].getKeys(), RoutineRegistry_1["default"].getKeys());
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Position;
+exports["default"] = {
+    command: CommandRegistry_1["default"],
+    control: ControlRegistry_1["default"],
+    routine: RoutineRegistry_1["default"],
+    getAllKeys: getAllKeys
+};
 
 
 /***/ }),
 /* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Keywords__ = __webpack_require__(2);
 
+exports.__esModule = true;
+var Keywords_1 = __webpack_require__(8);
+var Parameter = /** @class */ (function () {
+    function Parameter(validate, transform) {
+        this.validate = validate;
+        this.transform = transform;
+    }
+    return Parameter;
+}());
+exports["default"] = {
+    FINITE_NUMBER: new Parameter(function (parameter) {
+        return isFinite(parameter);
+    }, function (parameter) {
+        return parseFloat(parameter);
+    }),
+    UP_DOWN: new Parameter(function (parameter) {
+        return parameter === Keywords_1["default"].UP || parameter === Keywords_1["default"].DOWN;
+    }, function (parameter) {
+        return parameter.toString();
+    }),
+    NOT_KEYWORD: new Parameter(function (parameter) {
+        return /^[a-z].*/.test(parameter) && Object.values(Keywords_1["default"]).indexOf(parameter) === -1;
+    }, function (parameter) {
+        return parameter.toString();
+    })
+};
 
-class Parameter {
-  constructor(validate, transform) {
-    this.validate = validate;
-    this.transform = transform;
-  }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-  FINITE_NUMBER: new Parameter((parameter) => {
-    return isFinite(parameter);
-  }, (parameter) => {
-    return parseFloat(parameter);
-  }),
-  UP_DOWN: new Parameter((parameter) => {
-    return parameter === __WEBPACK_IMPORTED_MODULE_0__Keywords__["a" /* default */].UP || parameter === __WEBPACK_IMPORTED_MODULE_0__Keywords__["a" /* default */].DOWN;
-  }, (parameter) => {
-    return parameter;
-  }),
-  NOT_KEYWORD: new Parameter((parameter) => {
-    return /^[a-z].*/.test(parameter) && Object.values(__WEBPACK_IMPORTED_MODULE_0__Keywords__["a" /* default */]).indexOf(parameter) === -1;
-  }, (parameter) => {
-    return parameter.toString();
-  })
-});
 
 /***/ }),
 /* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-class Instruction {
-  constructor(parameterSchema, execute) {
-    this.parameterSchema = parameterSchema;
-    this.execute = execute;
-  }
 
-  valid(parameters) {
-    return (this.parameterSchema.length === parameters.length && 
-      this.parameterSchema.every((item, index) => {
-        return item.validate(parameters[index]);
-      })
-    );
-  }
-
-  createExecution(parameters) {
-    if(this.valid(parameters)) {
-      return {
-        execute: () => {
-          parameters = parameters.map((parameter, index) => {
-            return this.parameterSchema[index].transform(parameter);
-          });
-          return this.execute(...parameters);
-        }
-      };
-    } else {
-      throw new Error(`Invalid parameters: ${parameters}`);
-    }
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Instruction;
-
+exports.__esModule = true;
+exports["default"] = {
+    FORWARD: 'forward',
+    BACK: 'back',
+    LEFT: 'left',
+    RIGHT: 'right',
+    ROUTINE: 'routine',
+    STARTROUTINE: 'startroutine',
+    ENDROUTINE: 'endroutine',
+    REPEAT: 'repeat',
+    ENDREPEAT: 'endrepeat',
+    UP: 'up',
+    DOWN: 'down'
+};
 
 
 /***/ }),
 /* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Routine__ = __webpack_require__(15);
 
+exports.__esModule = true;
+var Instruction = /** @class */ (function () {
+    function Instruction(parameterSchema, execute) {
+        this.parameterSchema = parameterSchema;
+        this.execute = execute;
+    }
+    Instruction.prototype.valid = function (parameters) {
+        return (this.parameterSchema.length === parameters.length &&
+            this.parameterSchema.every(function (item, index) {
+                return item.validate(parameters[index]);
+            }));
+    };
+    Instruction.prototype.createExecution = function (parameters) {
+        var _this = this;
+        if (this.valid(parameters)) {
+            return {
+                execute: function () {
+                    parameters = parameters.map(function (parameter, index) {
+                        return _this.parameterSchema[index].transform(parameter);
+                    });
+                    return _this.execute.apply(_this, parameters);
+                }
+            };
+        }
+        else {
+            throw new Error("Invalid parameters: " + parameters);
+        }
+    };
+    return Instruction;
+}());
+exports["default"] = Instruction;
 
-let name, parameters, body;
-
-class RoutineGenerator {
-  constructor() {
-    this.start();
-  }
-
-  start() {
-    name = null;
-    parameters = [];
-    body = [];
-    return this;
-  }
-
-  setName(n) {
-    name = n;
-    return this;
-  }
-
-  addParameter(p) {
-    parameters.push(p);
-    return this;
-  }
-
-  addToBody(b) {
-    body.push(b);
-    return this;
-  }
-
-  generateRoutine() {
-    let routine = new __WEBPACK_IMPORTED_MODULE_0__Routine__["a" /* default */](name, parameters, body);
-    this.start();
-    return routine;
-  }
-}
-
-/* harmony default export */ __webpack_exports__["a"] = (new RoutineGenerator());
 
 /***/ }),
 /* 10 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__turtle_Position__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__parse_Parser__ = __webpack_require__(0);
 
+exports.__esModule = true;
+var Routine_1 = __webpack_require__(15);
+var name, parameters, body;
+var RoutineGenerator = /** @class */ (function () {
+    function RoutineGenerator() {
+        this.start();
+    }
+    RoutineGenerator.prototype.start = function () {
+        name = null;
+        parameters = [];
+        body = [];
+        return this;
+    };
+    RoutineGenerator.prototype.setName = function (n) {
+        name = n;
+        return this;
+    };
+    RoutineGenerator.prototype.addParameter = function (p) {
+        parameters.push(p);
+        return this;
+    };
+    RoutineGenerator.prototype.addToBody = function (b) {
+        body.push(b);
+        return this;
+    };
+    RoutineGenerator.prototype.generateRoutine = function () {
+        var routine = new Routine_1["default"](name, parameters, body);
+        this.start();
+        return routine;
+    };
+    return RoutineGenerator;
+}());
+exports["default"] = new RoutineGenerator();
 
-
-
-function reset() {
-  __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].reset();
-  __WEBPACK_IMPORTED_MODULE_2__parse_Parser__["a" /* default */].reset();
-  return this;
-}
-
-function setPosition(position) {
-  __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].position = new __WEBPACK_IMPORTED_MODULE_1__turtle_Position__["a" /* default */](position.x, position.y, position.angle);
-  return this;
-}
-
-function getPosition() {
-	return __WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].position;
-}
-
-function execute(input) {
-  try {
-    let journey = [__WEBPACK_IMPORTED_MODULE_0__turtle_Turtle__["a" /* default */].getCopy()];
-
-    let execution = __WEBPACK_IMPORTED_MODULE_2__parse_Parser__["a" /* default */].parse(input);
-    journey = journey.concat(execution());
-
-    reset();
-
-    return journey;
-  } catch(error) {
-    reset();
-
-    throw error;
-  }
-}
-
-/* harmony default export */ __webpack_exports__["default"] = ({reset, setPosition, getPosition, execute});
 
 /***/ }),
 /* 11 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-class Repeat {
-  constructor(parent, frequency) {
-    this.parent = parent;
-    this.frequency = frequency;
-    this.executions = [];
-  }
 
-  execute() {
-    let journey = [];
-
-    /* jshint ignore:start */
-    for(let i = 0; i < this.frequency; i++) {
-      journey = this.executions.reduce((accumulator, execution) => {
-        let partial = execution.execute();
-
-        if(Array.isArray(partial)) {
-          accumulator = accumulator.concat(partial);
-        } else {
-          accumulator.push(partial);
-        }
-
-        return accumulator;
-      }, journey);
-    }
-
-    return journey;
-    /* jshint ignore:end */
-  }
+exports.__esModule = true;
+var Turtle_1 = __webpack_require__(4);
+var Position_1 = __webpack_require__(5);
+var Parser_1 = __webpack_require__(0);
+function reset() {
+    Turtle_1["default"].reset(new Position_1["default"](0, 0, 180), true);
+    Parser_1["default"].reset();
+    return this;
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Repeat;
+function setPosition(position) {
+    Turtle_1["default"].position = new Position_1["default"](position.x, position.y, position.angle);
+    return this;
+}
+function getPosition() {
+    return Turtle_1["default"].position;
+}
+function execute(input) {
+    try {
+        var journey = [Turtle_1["default"].getCopy()];
+        var execution = Parser_1["default"].parse(input);
+        journey = journey.concat(execution());
+        reset();
+        return journey;
+    }
+    catch (error) {
+        reset();
+        throw error;
+    }
+}
+exports["default"] = { reset: reset, setPosition: setPosition, getPosition: getPosition, execute: execute };
 
 
 /***/ }),
 /* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__CommandRegistry__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ControlRegistry__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RoutineRegistry__ = __webpack_require__(16);
 
+exports.__esModule = true;
+var Repeat = /** @class */ (function () {
+    function Repeat(parent, frequency) {
+        this.parent = parent;
+        this.frequency = frequency;
+        this.executions = [];
+    }
+    Repeat.prototype.execute = function () {
+        var journey = [];
+        /* jshint ignore:start */
+        for (var i = 0; i < this.frequency; i++) {
+            journey = this.executions.reduce(function (accumulator, execution) {
+                var partial = execution.execute();
+                if (Array.isArray(partial)) {
+                    accumulator = accumulator.concat(partial);
+                }
+                else {
+                    accumulator.push(partial);
+                }
+                return accumulator;
+            }, journey);
+        }
+        return journey;
+        /* jshint ignore:end */
+    };
+    return Repeat;
+}());
+exports["default"] = Repeat;
 
-
-
-function getAllKeys() {
-  return [...__WEBPACK_IMPORTED_MODULE_0__CommandRegistry__["a" /* default */].getKeys(), ...__WEBPACK_IMPORTED_MODULE_1__ControlRegistry__["a" /* default */].getKeys(), ...__WEBPACK_IMPORTED_MODULE_2__RoutineRegistry__["a" /* default */].getKeys()];
-}
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-  command: __WEBPACK_IMPORTED_MODULE_0__CommandRegistry__["a" /* default */],
-  control: __WEBPACK_IMPORTED_MODULE_1__ControlRegistry__["a" /* default */],
-  routine: __WEBPACK_IMPORTED_MODULE_2__RoutineRegistry__["a" /* default */],
-  getAllKeys
-});
 
 /***/ }),
 /* 13 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Parameter__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Instruction__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Registry__ = __webpack_require__(4);
 
-
-
-
-
-let registry = new __WEBPACK_IMPORTED_MODULE_3__Registry__["a" /* default */]();
-
-registry.setItem('forward', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
-  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].move(distance);
+exports.__esModule = true;
+var Parameter_1 = __webpack_require__(7);
+var Instruction_1 = __webpack_require__(9);
+var Turtle_1 = __webpack_require__(4);
+var Registry_1 = __webpack_require__(3);
+var registry = new Registry_1["default"]();
+registry.setItem('forward', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (distance) {
+    return Turtle_1["default"].move(distance);
 }));
-
-registry.setItem('back', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (distance) => {
-  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].move(0 - distance);
+registry.setItem('back', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (distance) {
+    return Turtle_1["default"].move(0 - distance);
 }));
-
-registry.setItem('left', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
-  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].rotate(degree);
+registry.setItem('left', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (degree) {
+    return Turtle_1["default"].rotate(degree);
 }));
-
-registry.setItem('right',new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (degree) => {
-  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].rotate(0 - degree);
+registry.setItem('right', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (degree) {
+    return Turtle_1["default"].rotate(0 - degree);
 }));
-
-registry.setItem('pen', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].UP_DOWN], (pen) => {
-  __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].penDown = (pen === 'down');
-  return __WEBPACK_IMPORTED_MODULE_2__turtle_Turtle__["a" /* default */].getCopy();
+registry.setItem('pen', new Instruction_1["default"]([Parameter_1["default"].UP_DOWN], function (pen) {
+    Turtle_1["default"].penDown = (pen === 'down');
+    return Turtle_1["default"].getCopy();
 }));
+exports["default"] = registry;
 
-/* harmony default export */ __webpack_exports__["a"] = (registry);
 
 /***/ }),
 /* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Parameter__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Instruction__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__parse_ParseState__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__parse_Parser__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__parse_ExecutionStack__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Registry__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__RoutineGenerator__ = __webpack_require__(9);
 
-
-
-
-
-
-
-
-let registry = new __WEBPACK_IMPORTED_MODULE_5__Registry__["a" /* default */]();
-
-registry.setItem('routine', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].NOT_KEYWORD], (name) => {
-  __WEBPACK_IMPORTED_MODULE_6__RoutineGenerator__["a" /* default */].start();
-  __WEBPACK_IMPORTED_MODULE_6__RoutineGenerator__["a" /* default */].setName(name);
-  __WEBPACK_IMPORTED_MODULE_3__parse_Parser__["a" /* default */].setCurrentState(__WEBPACK_IMPORTED_MODULE_2__parse_ParseState__["a" /* default */].DEFINING_ROUTINE_PARAMETERS);
+exports.__esModule = true;
+var Parameter_1 = __webpack_require__(7);
+var Instruction_1 = __webpack_require__(9);
+var ParseState_1 = __webpack_require__(2);
+var Parser_1 = __webpack_require__(0);
+var ExecutionStack_1 = __webpack_require__(1);
+var Registry_1 = __webpack_require__(3);
+var RoutineGenerator_1 = __webpack_require__(10);
+var registry = new Registry_1["default"]();
+registry.setItem('routine', new Instruction_1["default"]([Parameter_1["default"].NOT_KEYWORD], function (name) {
+    RoutineGenerator_1["default"].start();
+    RoutineGenerator_1["default"].setName(name);
+    Parser_1["default"].setCurrentState(ParseState_1["default"].DEFINING_ROUTINE_PARAMETERS);
 }));
-
-registry.setItem('startroutine', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([], () => {
-  throw new Error('startroutine called without routine');
+registry.setItem('startroutine', new Instruction_1["default"]([], function () {
+    throw new Error('startroutine called without routine');
 }));
-
-registry.setItem('endroutine', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([], () => {
-  throw new Error('endroutine called without routine');
+registry.setItem('endroutine', new Instruction_1["default"]([], function () {
+    throw new Error('endroutine called without routine');
 }));
-
-registry.setItem('repeat', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([__WEBPACK_IMPORTED_MODULE_0__Parameter__["a" /* default */].FINITE_NUMBER], (frequency) => {
-  __WEBPACK_IMPORTED_MODULE_4__parse_ExecutionStack__["a" /* default */].pushNewRepeat(frequency);
+registry.setItem('repeat', new Instruction_1["default"]([Parameter_1["default"].FINITE_NUMBER], function (frequency) {
+    ExecutionStack_1["default"].pushNewRepeat(frequency);
 }));
-
-registry.setItem('endrepeat', new __WEBPACK_IMPORTED_MODULE_1__Instruction__["a" /* default */]([], () => {
-  __WEBPACK_IMPORTED_MODULE_4__parse_ExecutionStack__["a" /* default */].closeCurrentRepeat();
+registry.setItem('endrepeat', new Instruction_1["default"]([], function () {
+    ExecutionStack_1["default"].closeCurrentRepeat();
 }));
+exports["default"] = registry;
 
-/* harmony default export */ __webpack_exports__["a"] = (registry);
 
 /***/ }),
 /* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+exports.__esModule = true;
 function createParameterValueMap(values, parameters) {
-  if(values.length === parameters.length) {
-    return parameters.reduce((accumulator, parameterName, index) => {
-      accumulator[parameterName] = values[index];
-      return accumulator;
-    }, {});
-  }
+    if (values.length === parameters.length) {
+        return parameters.reduce(function (accumulator, parameterName, index) {
+            accumulator[parameterName] = values[index];
+            return accumulator;
+        }, {});
+    }
 }
-
-class Routine {
-  constructor(name, parameters, body) {
-    this.name = name;
-    this.parameters = parameters;
-    this.body = body;
-  }  
-
-  parseBody(values) {
-    let parameterValues = createParameterValueMap(values, this.parameters);
-
-    return this.body.map((word) => {
-      if(parameterValues[word] !== undefined) {
-        return parameterValues[word];
-      } else {
-        return word;
-      }
-    });
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Routine;
+var Routine = /** @class */ (function () {
+    function Routine(name, parameters, body) {
+        this.name = name;
+        this.parameters = parameters;
+        this.body = body;
+    }
+    Routine.prototype.parseBody = function (values) {
+        var parameterValues = createParameterValueMap(values, this.parameters);
+        return this.body.map(function (word) {
+            if (parameterValues[word] !== undefined) {
+                return parameterValues[word];
+            }
+            else {
+                return word;
+            }
+        });
+    };
+    return Routine;
+}());
+exports["default"] = Routine;
 
 
 /***/ }),
 /* 16 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Registry__ = __webpack_require__(4);
 
-/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_0__Registry__["a" /* default */]());
+exports.__esModule = true;
+var Registry_1 = __webpack_require__(3);
+exports["default"] = new Registry_1["default"]();
+
 
 /***/ }),
 /* 17 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-function tokenize(input) {
-  return input.split("\n").join(" ").split(" ");
-}
 
-/* harmony default export */ __webpack_exports__["a"] = ({tokenize});
+exports.__esModule = true;
+function tokenize(input) {
+    return input.split("\n").join(" ").split(" ");
+}
+exports["default"] = { tokenize: tokenize };
+
 
 /***/ })
 /******/ ])["default"];

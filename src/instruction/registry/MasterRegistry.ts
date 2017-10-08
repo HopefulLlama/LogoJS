@@ -2,7 +2,7 @@ import CommandRegistry from './CommandRegistry';
 import ControlRegistry from './ControlRegistry';
 import RoutineRegistry from './RoutineRegistry';
 
-function getAllKeys() {
+function getAllKeys(): string[] {
   return [...CommandRegistry.getKeys(), ...ControlRegistry.getKeys(), ...RoutineRegistry.getKeys()];
 }
 

@@ -1,5 +1,9 @@
 export default class Position {
-  constructor(x, y, angle) {
+  x: number;
+  y: number;
+  angle: number;
+  
+  constructor(x: number, y: number, angle: number) {
     this.x = x;
     this.y = y;
     

@@ -1,35 +1,35 @@
 import Routine from './Routine';
 
-let name, parameters, body;
+let name: string, parameters: string[], body: string[];
 
 class RoutineGenerator {
   constructor() {
     this.start();
   }
 
-  start() {
+  start(): RoutineGenerator {
     name = null;
     parameters = [];
     body = [];
     return this;
   }
 
-  setName(n) {
+  setName(n: string): RoutineGenerator {
     name = n;
     return this;
   }
 
-  addParameter(p) {
+  addParameter(p: string): RoutineGenerator {
     parameters.push(p);
     return this;
   }
 
-  addToBody(b) {
+  addToBody(b: string): RoutineGenerator {
     body.push(b);
     return this;
   }
 
-  generateRoutine() {
+  generateRoutine(): Routine {
     let routine = new Routine(name, parameters, body);
     this.start();
     return routine;

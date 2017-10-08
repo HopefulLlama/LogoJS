@@ -1,17 +1,21 @@
 export default class Repeat {
-  constructor(parent, frequency) {
+  parent: Repeat;
+  frequency: number;
+  executions: Object[];
+
+  constructor(parent: any, frequency: number) {
     this.parent = parent;
     this.frequency = frequency;
     this.executions = [];
   }
 
-  execute() {
-    let journey = [];
+  execute(): any {
+    let journey: any = [];
 
     /* jshint ignore:start */
     for(let i = 0; i < this.frequency; i++) {
-      journey = this.executions.reduce((accumulator, execution) => {
-        let partial = execution.execute();
+      journey = this.executions.reduce((accumulator: any, execution: any) => {
+        let partial: any = execution.execute();
 
         if(Array.isArray(partial)) {
           accumulator = accumulator.concat(partial);
