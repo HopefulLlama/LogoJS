@@ -21,9 +21,9 @@ function copyFile(srcFile, destFile) {
 }
 
 gulp.task('default', sequence('test'));
-gulp.task('test', sequence('build', 'unit-test', 'unit-test:min'));
-gulp.task('build', sequence('tslint', 'webpack', 'compress-logo-js', 'copy'));
-gulp.task('build-app', sequence('lint-app', 'concat', 'compress-logo-app'));
+gulp.task('test', sequence('build', 'lint:test', 'unit-test', 'unit-test:min'));
+gulp.task('build', sequence('tslint', 'webpack', 'compress:logo-js', 'copy'));
+gulp.task('build:app', sequence('lint:app', 'concat', 'compress:logo-app'));
 
 gulp.task('copy', () => {
   copyFile('dist/Logo.js', `${OUTPUT_DIR}/Logo.js`);
@@ -53,22 +53,21 @@ gulp.task('webpack', () => {
   .pipe(gulp.dest('dist/'));
 });
 
-gulp.task('compress-logo-app', (done) => {
+function compress(src, dest, done) {
   pump([
-    gulp.src(`${OUTPUT_DIR}/${OUTPUT_FILE}`),
+    gulp.src(src),
     uglify(),
     rename({suffix: '.min'}),
-    gulp.dest(OUTPUT_DIR)
+    gulp.dest(dest)
   ], done);
+}
+
+gulp.task('compress:logo-app', (done) => {
+  compress(`${OUTPUT_DIR}/${OUTPUT_FILE}`, OUTPUT_DIR, done);
 });
 
-gulp.task('compress-logo-js', (done) => {
-  pump([
-    gulp.src('dist/Logo.js'),
-    uglify(),
-    rename({suffix: '.min'}),
-    gulp.dest('dist')
-  ], done);
+gulp.task('compress:logo-js', (done) => {
+  compress('dist/Logo.js', 'dist', done);
 });
 
 gulp.task('concat', () => {
@@ -89,21 +88,30 @@ gulp.task('tslint', () => {
   .pipe(tslint.report());
 });
 
-gulp.task('lint-app', () => {
-  return gulp.src([
-    'logo-app/**/*.js'
-  ])
+function lint(src) {
+  return gulp.src(src)
   .pipe(jshint())
   .pipe(jshint.reporter('default'))
   .pipe(jshint.reporter('fail'));
+}
+
+gulp.task('lint:test', () => {
+  return lint(['spec/**/*.js']);
 });
 
-gulp.task('unit-test', () => {
+gulp.task('lint:app', () => {
+  return lint(['logo-app/**/*.js']);
+});
+
+function karma(config) {
   let karma = path.join('node_modules', 'karma', 'bin', 'karma');
-  childProcess.execSync(`node ${karma} start --single-run`, {stdio: [0,1,2]});
+  childProcess.execSync(`node ${karma} start ${config} --single-run`, {stdio: [0,1,2]});
+}
+
+gulp.task('unit-test', () => {
+  karma('');
 });
 
 gulp.task('unit-test:min', () => {
-  let karma = path.join('node_modules', 'karma', 'bin', 'karma');
-  childProcess.execSync(`node ${karma} start karma-min.conf.js --single-run`, {stdio: [0,1,2]});
+  karma('karma-min.conf.js');
 });
