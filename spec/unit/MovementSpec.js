@@ -55,7 +55,7 @@ describe('Movement', () => {
     it(`${command} with bad parameter should throw an error`, () => {
       expect(() => {
         LogoJS.execute(`${command} dab`);
-      }).toThrowError('Invalid parameters: dab');
+      }).toThrowError('Expected a float, but got dab');
     });
   });
 });

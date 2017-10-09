@@ -1,20 +1,39 @@
 import Keywords from '../instruction/Keywords';
 import Parameter from './Parameter';
 
+function expectationMessage(expect: string, actual: string): string {
+  return `Expected ${expect}, but got ${actual}`;
+}
+
 export default {
-  FINITE_NUMBER: new Parameter((parameter: number): boolean => {
-    return isFinite(parameter);
-  }, (parameter: string): number => {
-    return parseFloat(parameter);
+  FINITE_NUMBER: new Parameter((parameter: string): number => {
+    let number = parseFloat(parameter);
+    if(!isNaN(number) && isFinite(number)) {
+      return number;
+    } else {
+      throw new Error(expectationMessage('a float', parameter));
+    }
   }),
-  UP_DOWN: new Parameter((parameter: string): boolean => {
-    return parameter === Keywords.UP || parameter === Keywords.DOWN;
-  }, (parameter: string): string => {
-    return parameter.toString();
+  POSITIVE_INTEGER: new Parameter((parameter: string): number => {
+    let number = Math.floor(Number(parameter));
+    if(String(number) === parameter && number > 0) {
+      return number;
+    } else {
+      throw new Error(expectationMessage('an integer greater than zero', parameter));
+    }
   }),
-  NOT_KEYWORD: new Parameter((parameter: string): boolean => {
-    return /^[a-z].*/.test(parameter) && Object.values(Keywords).indexOf(parameter) === -1;
-  }, (parameter: string): string => {
-    return parameter.toString();
+  UP_DOWN: new Parameter((parameter: string): string => {
+    if(parameter === Keywords.UP || parameter === Keywords.DOWN) {
+      return parameter;
+    } else {
+      throw new Error(expectationMessage('either "up" or "down"', parameter));
+    }
+  }),
+  NOT_KEYWORD: new Parameter((parameter: string): string => {
+    if(/^[a-z].*/.test(parameter) && Object.values(Keywords).indexOf(parameter) === -1) {
+      return parameter;
+    } else {
+      throw new Error(expectationMessage('non-reserved word', `reserved word: ${parameter}`));
+    }
   })
 };

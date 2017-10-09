@@ -323,21 +323,43 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Keywords_1 = __webpack_require__(8);
 var Parameter_1 = __webpack_require__(15);
+function expectationMessage(expect, actual) {
+    return "Expected " + expect + ", but got " + actual;
+}
 exports.default = {
     FINITE_NUMBER: new Parameter_1.default(function (parameter) {
-        return isFinite(parameter);
-    }, function (parameter) {
-        return parseFloat(parameter);
+        var number = parseFloat(parameter);
+        if (!isNaN(number) && isFinite(number)) {
+            return number;
+        }
+        else {
+            throw new Error(expectationMessage('a float', parameter));
+        }
+    }),
+    POSITIVE_INTEGER: new Parameter_1.default(function (parameter) {
+        var number = Math.floor(Number(parameter));
+        if (String(number) === parameter && number > 0) {
+            return number;
+        }
+        else {
+            throw new Error(expectationMessage('an integer greater than zero', parameter));
+        }
     }),
     UP_DOWN: new Parameter_1.default(function (parameter) {
-        return parameter === Keywords_1.default.UP || parameter === Keywords_1.default.DOWN;
-    }, function (parameter) {
-        return parameter.toString();
+        if (parameter === Keywords_1.default.UP || parameter === Keywords_1.default.DOWN) {
+            return parameter;
+        }
+        else {
+            throw new Error(expectationMessage('either "up" or "down"', parameter));
+        }
     }),
     NOT_KEYWORD: new Parameter_1.default(function (parameter) {
-        return /^[a-z].*/.test(parameter) && Object.values(Keywords_1.default).indexOf(parameter) === -1;
-    }, function (parameter) {
-        return parameter.toString();
+        if (/^[a-z].*/.test(parameter) && Object.values(Keywords_1.default).indexOf(parameter) === -1) {
+            return parameter;
+        }
+        else {
+            throw new Error(expectationMessage('non-reserved word', "reserved word: " + parameter));
+        }
     })
 };
 
@@ -377,25 +399,14 @@ var Instruction = /** @class */ (function () {
         this.parameterSchema = parameterSchema;
         this.execute = execute;
     }
-    Instruction.prototype.valid = function (parameters) {
-        return (this.parameterSchema.length === parameters.length &&
-            this.parameterSchema.every(function (item, index) {
-                return item.validate(parameters[index]);
-            }));
-    };
     Instruction.prototype.createExecution = function (parameters) {
         var _this = this;
-        if (this.valid(parameters)) {
-            return new Executeable_1.default(function () {
-                parameters = parameters.map(function (parameter, index) {
-                    return _this.parameterSchema[index].transform(parameter);
-                });
-                return _this.execute.apply(_this, parameters);
+        return new Executeable_1.default(function () {
+            parameters = parameters.map(function (parameter, index) {
+                return _this.parameterSchema[index].validateAndTransform(parameter);
             });
-        }
-        else {
-            throw new Error("Invalid parameters: " + parameters);
-        }
+            return _this.execute.apply(_this, parameters);
+        });
     };
     return Instruction;
 }());
@@ -583,9 +594,8 @@ exports.default = registry;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var Parameter = /** @class */ (function () {
-    function Parameter(validate, transform) {
-        this.validate = validate;
-        this.transform = transform;
+    function Parameter(validateAndTransform) {
+        this.validateAndTransform = validateAndTransform;
     }
     return Parameter;
 }());
@@ -634,7 +644,7 @@ registry.setItem('startroutine', new Instruction_1.default([], function () {
 registry.setItem('endroutine', new Instruction_1.default([], function () {
     throw new Error('endroutine called without routine');
 }));
-registry.setItem('repeat', new Instruction_1.default([ParameterMap_1.default.FINITE_NUMBER], function (frequency) {
+registry.setItem('repeat', new Instruction_1.default([ParameterMap_1.default.POSITIVE_INTEGER], function (frequency) {
     ExecutionStack_1.default.pushNewRepeat(frequency);
 }));
 registry.setItem('endrepeat', new Instruction_1.default([], function () {

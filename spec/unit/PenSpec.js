@@ -40,6 +40,6 @@ describe('Pen', () => {
   it('bad parameter should throw an error', () => {
     expect(() => {
       LogoJS.execute('pen dab');
-    }).toThrowError('Invalid parameters: dab');
+    }).toThrowError('Expected either "up" or "down", but got dab');
   });
 });

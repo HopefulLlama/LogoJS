@@ -69,7 +69,7 @@ describe('Routine', () => {
     it(`should throw error when trying to define ${keyword} as routine`, () => {
       expect(() => {
         LogoJS.execute(`routine ${keyword} startroutine forward 1 endroutine`);
-      }).toThrowError(`Invalid parameters: ${keyword}`);
+      }).toThrowError(`Expected non-reserved word, but got reserved word: ${keyword}`);
     });
   });
 

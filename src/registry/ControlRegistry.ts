@@ -22,7 +22,7 @@ registry.setItem('endroutine', new Instruction([], (): void => {
   throw new Error('endroutine called without routine');
 }));
 
-registry.setItem('repeat', new Instruction([ParameterMap.FINITE_NUMBER], (frequency: number): void => {
+registry.setItem('repeat', new Instruction([ParameterMap.POSITIVE_INTEGER], (frequency: number): void => {
   ExecutionStack.pushNewRepeat(frequency);
 }));
 

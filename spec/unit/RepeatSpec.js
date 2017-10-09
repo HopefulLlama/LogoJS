@@ -25,10 +25,12 @@ describe('Repeat', () => {
     });
   });
 
-  it('bad parameter should throw an error', () => {
-    expect(() => {
-      LogoJS.execute('repeat dab');
-    }).toThrowError('Invalid parameters: dab');
+  ['dab', '0.5', '-1', '-1000', '1.5'].forEach((parameter) => {
+    it(`bad parameter ${parameter} should throw an error`, () => {
+      expect(() => {
+        LogoJS.execute(`repeat ${parameter} endrepeat`);
+      }).toThrowError(`Expected an integer greater than zero, but got ${parameter}`);
+    });
   });
 
   it('unclosed repeat should throw error', () => {

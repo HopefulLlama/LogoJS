@@ -10,26 +10,12 @@ export default class Instruction {
     this.execute = execute;
   }
 
-  valid(parameters: any[]): boolean {
-    return (this.parameterSchema.length === parameters.length && 
-      this.parameterSchema.every((item, index) => {
-        return item.validate(parameters[index]);
-      })
-    );
-  }
-
   createExecution(parameters: any[]): Executeable {
-    if(this.valid(parameters)) {
-
-      return new Executeable(() => {
-        parameters = parameters.map((parameter, index) => {
-          return this.parameterSchema[index].transform(parameter);
-        });
-        return this.execute(...parameters);
+    return new Executeable(() => {
+      parameters = parameters.map((parameter, index) => {
+        return this.parameterSchema[index].validateAndTransform(parameter);
       });
-      
-    } else {
-      throw new Error(`Invalid parameters: ${parameters}`);
-    }
+      return this.execute(...parameters);
+    });
   }
 }
