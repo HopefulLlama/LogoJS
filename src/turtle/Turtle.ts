@@ -3,18 +3,20 @@ import Position from './Position';
 class Turtle {
   position: Position;
   penDown: boolean;
+  colour: string;
 
-  constructor(position: Position, penDown: boolean) {
-    this.reset(position, penDown);
+  constructor(position: Position, penDown: boolean, colour: string) {
+    this.reset(position, penDown, colour);
   }
 
-  reset(position: Position, penDown: boolean): void {
+  reset(position: Position, penDown: boolean, colour: string): void {
     this.position = position;
     this.penDown = penDown;
+    this.colour = colour;
   }
 
   getCopy(): Object {
-    return {position: this.position, penDown: this.penDown};
+    return {position: this.position, penDown: this.penDown, colour: this.colour};
   }
 
   move(distance: number): Object {
@@ -42,4 +44,4 @@ class Turtle {
   }
 }
 
-export default new Turtle(new Position(0, 0, 180), true);
+export default new Turtle(new Position(0, 0, 180), true, '#000000');

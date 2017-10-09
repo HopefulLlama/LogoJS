@@ -3,7 +3,7 @@ import Position from './turtle/Position';
 import Parser from './parse/Parser';
 
 function reset(): Object {
-  Turtle.reset(new Position(0, 0, 180), true);
+  Turtle.reset(new Position(0, 0, 180), true, '#000000');
   Parser.reset();
   return this;
 }

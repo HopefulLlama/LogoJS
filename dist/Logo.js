@@ -246,15 +246,16 @@ exports.default = Registry;
 Object.defineProperty(exports, "__esModule", { value: true });
 var Position_1 = __webpack_require__(5);
 var Turtle = /** @class */ (function () {
-    function Turtle(position, penDown) {
-        this.reset(position, penDown);
+    function Turtle(position, penDown, colour) {
+        this.reset(position, penDown, colour);
     }
-    Turtle.prototype.reset = function (position, penDown) {
+    Turtle.prototype.reset = function (position, penDown, colour) {
         this.position = position;
         this.penDown = penDown;
+        this.colour = colour;
     };
     Turtle.prototype.getCopy = function () {
-        return { position: this.position, penDown: this.penDown };
+        return { position: this.position, penDown: this.penDown, colour: this.colour };
     };
     Turtle.prototype.move = function (distance) {
         var radians = Math.PI * this.position.angle / 180;
@@ -268,7 +269,7 @@ var Turtle = /** @class */ (function () {
     };
     return Turtle;
 }());
-exports.default = new Turtle(new Position_1.default(0, 0, 180), true);
+exports.default = new Turtle(new Position_1.default(0, 0, 180), true, '#000000');
 
 
 /***/ }),
@@ -492,7 +493,7 @@ var Turtle_1 = __webpack_require__(4);
 var Position_1 = __webpack_require__(5);
 var Parser_1 = __webpack_require__(0);
 function reset() {
-    Turtle_1.default.reset(new Position_1.default(0, 0, 180), true);
+    Turtle_1.default.reset(new Position_1.default(0, 0, 180), true, '#000000');
     Parser_1.default.reset();
     return this;
 }
