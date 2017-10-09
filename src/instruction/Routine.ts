@@ -1,11 +1,4 @@
-function createParameterValueMap(values: any[], parameters: any[]): any {
-  if(values.length === parameters.length) {
-    return parameters.reduce((accumulator, parameterName, index) => {
-      accumulator[parameterName] = values[index];
-      return accumulator;
-    }, {});
-  }
-}
+import ParameterValuesMap from '../parameter/ParameterValueMap';
 
 export default class Routine {
   name: string;
@@ -18,15 +11,14 @@ export default class Routine {
     this.body = body;
   }  
 
-  parseBody(values: any[]): string[] {
-    let parameterValues = createParameterValueMap(values, this.parameters);
-
-    return this.body.map((word) => {
-      if(parameterValues[word] !== undefined) {
-        return parameterValues[word];
-      } else {
-        return word;
-      }
-    });
+  createParameterValueMap(values: any[]): ParameterValuesMap {
+    let map = new Map();
+    if(values.length === this.parameters.length) {
+      this.parameters.reduce((accumulator: any, parameterName: string, index: number) => {
+        accumulator.set(parameterName, values[index]);
+        return accumulator;
+      }, map);
+    }
+    return new ParameterValuesMap(map);
   }
 }

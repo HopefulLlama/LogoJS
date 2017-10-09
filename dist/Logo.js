@@ -61,7 +61,7 @@ var LogoJS =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -73,12 +73,13 @@ var LogoJS =
 Object.defineProperty(exports, "__esModule", { value: true });
 var ExecutionStack_1 = __webpack_require__(1);
 var ParseState_1 = __webpack_require__(2);
-var Tokenizer_1 = __webpack_require__(19);
+var Tokenizer_1 = __webpack_require__(20);
 var MasterRegistry_1 = __webpack_require__(6);
+var ParameterValueMap_1 = __webpack_require__(11);
 var currentState = ParseState_1.default.EXECUTING_COMMANDS;
-function generateExecutions(tokens) {
+function generateExecutions(tokens, parameterValueMap) {
     while (tokens.length > 0) {
-        currentState(tokens.shift(), tokens);
+        currentState(tokens.shift(), tokens, parameterValueMap);
     }
 }
 function reset() {
@@ -87,7 +88,7 @@ function reset() {
 }
 function parse(input) {
     ExecutionStack_1.default.instantiate();
-    generateExecutions(Tokenizer_1.default.tokenize(input));
+    generateExecutions(Tokenizer_1.default.tokenize(input), new ParameterValueMap_1.default(new Map()));
     return function () {
         return ExecutionStack_1.default.execute();
     };
@@ -105,7 +106,7 @@ exports.default = { reset: reset, parse: parse, setCurrentState: setCurrentState
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Repeat_1 = __webpack_require__(12);
+var Repeat_1 = __webpack_require__(13);
 var ExecutionStack = /** @class */ (function () {
     function ExecutionStack() {
         this.instantiate();
@@ -156,34 +157,35 @@ var Keywords_1 = __webpack_require__(8);
 var ExecutionStack_1 = __webpack_require__(1);
 var Parser_1 = __webpack_require__(0);
 var ParseState_1 = __webpack_require__(2);
-function getControlExecution(control, tokens) {
-    var parameters = tokens.splice(0, control.parameterSchema.length);
+function getControlExecution(control, tokens, parameterValueMap) {
+    var parameters = parameterValueMap.substituteParameters(tokens.splice(0, control.parameterSchema.length));
     return control.createExecution(parameters);
 }
-function getInstructionExecution(command, tokens) {
-    var parameters = tokens.splice(0, command.parameterSchema.length);
+function getInstructionExecution(command, tokens, parameterValueMap) {
+    var parameters = parameterValueMap.substituteParameters(tokens.splice(0, command.parameterSchema.length));
     return command.createExecution(parameters);
 }
-function getRoutineExecution(routine, tokens) {
+function getRoutineExecution(routine, tokens, parameterValueMap) {
     var parameters = tokens.splice(0, routine.parameters.length);
-    Parser_1.default.generateExecutions(routine.parseBody(parameters));
+    var newParameterValueMap = routine.createParameterValueMap(parameters);
+    Parser_1.default.generateExecutions(routine.body, newParameterValueMap);
 }
 exports.default = {
-    EXECUTING_COMMANDS: function (word, tokens) {
+    EXECUTING_COMMANDS: function (word, tokens, parameterValueMap) {
         if (MasterRegistry_1.default.control.getItem(word) !== undefined) {
-            getControlExecution(MasterRegistry_1.default.control.getItem(word), tokens).execute();
+            getControlExecution(MasterRegistry_1.default.control.getItem(word), tokens, parameterValueMap).execute();
         }
         else if (MasterRegistry_1.default.command.getItem(word) !== undefined) {
-            ExecutionStack_1.default.pushExecution(getInstructionExecution(MasterRegistry_1.default.command.getItem(word), tokens));
+            ExecutionStack_1.default.pushExecution(getInstructionExecution(MasterRegistry_1.default.command.getItem(word), tokens, parameterValueMap));
         }
         else if (MasterRegistry_1.default.routine.getItem(word) !== undefined) {
-            getRoutineExecution(MasterRegistry_1.default.routine.getItem(word), tokens);
+            getRoutineExecution(MasterRegistry_1.default.routine.getItem(word), tokens, parameterValueMap);
         }
         else {
             throw new Error("Control or Command not found: " + word);
         }
     },
-    DEFINING_ROUTINE_PARAMETERS: function (word, tokens) {
+    DEFINING_ROUTINE_PARAMETERS: function (word, tokens, parameterValueMap) {
         if (word === Keywords_1.default.STARTROUTINE) {
             Parser_1.default.setCurrentState(ParseState_1.default.DEFINING_ROUTINE_BODY);
         }
@@ -194,7 +196,7 @@ exports.default = {
             RoutineGenerator_1.default.addParameter(word);
         }
     },
-    DEFINING_ROUTINE_BODY: function (word, tokens) {
+    DEFINING_ROUTINE_BODY: function (word, tokens, parameterValueMap) {
         if (word === Keywords_1.default.ENDROUTINE) {
             Parser_1.default.setCurrentState(ParseState_1.default.EXECUTING_COMMANDS);
             var routine = RoutineGenerator_1.default.generateRoutine();
@@ -298,9 +300,9 @@ exports.default = Position;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var CommandRegistry_1 = __webpack_require__(13);
-var ControlRegistry_1 = __webpack_require__(16);
-var RoutineRegistry_1 = __webpack_require__(18);
+var CommandRegistry_1 = __webpack_require__(14);
+var ControlRegistry_1 = __webpack_require__(17);
+var RoutineRegistry_1 = __webpack_require__(19);
 function getAllKeys() {
     return CommandRegistry_1.default.getKeys().concat(ControlRegistry_1.default.getKeys(), RoutineRegistry_1.default.getKeys());
 }
@@ -320,7 +322,7 @@ exports.default = {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var Keywords_1 = __webpack_require__(8);
-var Parameter_1 = __webpack_require__(14);
+var Parameter_1 = __webpack_require__(15);
 exports.default = {
     FINITE_NUMBER: new Parameter_1.default(function (parameter) {
         return isFinite(parameter);
@@ -369,7 +371,7 @@ exports.default = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Executeable_1 = __webpack_require__(15);
+var Executeable_1 = __webpack_require__(16);
 var Instruction = /** @class */ (function () {
     function Instruction(parameterSchema, execute) {
         this.parameterSchema = parameterSchema;
@@ -407,7 +409,7 @@ exports.default = Instruction;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Routine_1 = __webpack_require__(17);
+var Routine_1 = __webpack_require__(18);
 var name, parameters, body;
 var RoutineGenerator = /** @class */ (function () {
     function RoutineGenerator() {
@@ -448,6 +450,33 @@ exports.default = new RoutineGenerator();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+var ParameterValueMap = /** @class */ (function () {
+    function ParameterValueMap(map) {
+        this.map = map;
+    }
+    ParameterValueMap.prototype.substituteParameters = function (parameters) {
+        var _this = this;
+        return parameters.map(function (word) {
+            if (_this.map.has(word)) {
+                return _this.map.get(word);
+            }
+            else {
+                return word;
+            }
+        });
+    };
+    return ParameterValueMap;
+}());
+exports.default = ParameterValueMap;
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var Turtle_1 = __webpack_require__(4);
 var Position_1 = __webpack_require__(5);
 var Parser_1 = __webpack_require__(0);
@@ -480,7 +509,7 @@ exports.default = { reset: reset, setPosition: setPosition, getPosition: getPosi
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -516,7 +545,7 @@ exports.default = Repeat;
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -547,7 +576,7 @@ exports.default = registry;
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -564,7 +593,7 @@ exports.default = Parameter;
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -580,7 +609,7 @@ exports.default = Executeable;
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -615,36 +644,28 @@ exports.default = registry;
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-function createParameterValueMap(values, parameters) {
-    if (values.length === parameters.length) {
-        return parameters.reduce(function (accumulator, parameterName, index) {
-            accumulator[parameterName] = values[index];
-            return accumulator;
-        }, {});
-    }
-}
+var ParameterValueMap_1 = __webpack_require__(11);
 var Routine = /** @class */ (function () {
     function Routine(name, parameters, body) {
         this.name = name;
         this.parameters = parameters;
         this.body = body;
     }
-    Routine.prototype.parseBody = function (values) {
-        var parameterValues = createParameterValueMap(values, this.parameters);
-        return this.body.map(function (word) {
-            if (parameterValues[word] !== undefined) {
-                return parameterValues[word];
-            }
-            else {
-                return word;
-            }
-        });
+    Routine.prototype.createParameterValueMap = function (values) {
+        var map = new Map();
+        if (values.length === this.parameters.length) {
+            this.parameters.reduce(function (accumulator, parameterName, index) {
+                accumulator.set(parameterName, values[index]);
+                return accumulator;
+            }, map);
+        }
+        return new ParameterValueMap_1.default(map);
     };
     return Routine;
 }());
@@ -652,7 +673,7 @@ exports.default = Routine;
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -663,7 +684,7 @@ exports.default = new Registry_1.default();
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

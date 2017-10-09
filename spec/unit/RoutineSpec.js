@@ -41,6 +41,18 @@ describe('Routine', () => {
     ]);
   });
 
+  it('should only replace parameters with values, not routine names', () => {
+    let journey = LogoJS.execute('routine nested startroutine forward 1 endroutine ' + 
+      'routine callnested nested startroutine nested endroutine ' +
+      'callnested 100'
+    );
+
+    compareJourneys(journey, [
+      {position: {x: 0, y: 0, angle: 0}, penDown: true},
+      {position: {x: 0, y: 1, angle: 0}, penDown: true}
+    ]);
+  });
+
   [
     'forward',
     'back',
