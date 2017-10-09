@@ -8,8 +8,8 @@ describe('Pen', () => {
     let journey = LogoJS.execute('pen up');
 
     compareJourneys(journey, [
-      {position: {x: 0, y: 0, angle: 0}, penDown: true},
-      {position: {x: 0, y: 0, angle: 0}, penDown: false}
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 0, angle: 0}, penDown: false, colour: '#000000'}
     ]);
   });
 
@@ -17,9 +17,9 @@ describe('Pen', () => {
     let journey = LogoJS.execute('pen up pen down');
 
     compareJourneys(journey, [
-      {position: {x: 0, y: 0, angle: 0}, penDown: true},
-      {position: {x: 0, y: 0, angle: 0}, penDown: false},
-      {position: {x: 0, y: 0, angle: 0}, penDown: true}
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 0, angle: 0}, penDown: false, colour: '#000000'},
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'}
     ]);
   });
 
@@ -27,13 +27,13 @@ describe('Pen', () => {
     let journey = LogoJS.execute('pen up forward 1 forward 1 forward 1 pen down forward 1');
 
     compareJourneys(journey, [
-      {position: {x: 0, y: 0, angle: 0}, penDown: true},
-      {position: {x: 0, y: 0, angle: 0}, penDown: false},
-      {position: {x: 0, y: 1, angle: 0}, penDown: false},
-      {position: {x: 0, y: 2, angle: 0}, penDown: false},
-      {position: {x: 0, y: 3, angle: 0}, penDown: false},
-      {position: {x: 0, y: 3, angle: 0}, penDown: true},
-      {position: {x: 0, y: 4, angle: 0}, penDown: true}
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 0, angle: 0}, penDown: false, colour: '#000000'},
+      {position: {x: 0, y: 1, angle: 0}, penDown: false, colour: '#000000'},
+      {position: {x: 0, y: 2, angle: 0}, penDown: false, colour: '#000000'},
+      {position: {x: 0, y: 3, angle: 0}, penDown: false, colour: '#000000'},
+      {position: {x: 0, y: 3, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 4, angle: 0}, penDown: true, colour: '#000000'}
     ]);
   });
 

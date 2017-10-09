@@ -6,7 +6,10 @@ function compareJourneys(journeyA, journeyB) {
       expect(waypoint.position.x).toBe(journeyB[index].position.x);
       expect(waypoint.position.y).toBe(journeyB[index].position.y);
       expect(waypoint.position.angle).toBe(journeyB[index].position.angle);
+
       expect(waypoint.penDown).toBe(journeyB[index].penDown);
+
+      expect(waypoint.colour).toBe(journeyB[index].colour);
     });
   }
 }

@@ -8,7 +8,7 @@ describe('Routine', () => {
     let journey = LogoJS.execute('routine empty startroutine endroutine empty');
 
     compareJourneys(journey, [
-      {position: {x: 0, y: 0, angle: 0}, penDown: true}
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'}
     ]);
   });
 
@@ -16,8 +16,8 @@ describe('Routine', () => {
     let journey = LogoJS.execute('routine basic startroutine forward 1 endroutine basic');
 
     compareJourneys(journey, [
-      {position: {x: 0, y: 0, angle: 0}, penDown: true},
-      {position: {x: 0, y: 1, angle: 0}, penDown: true}
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 1, angle: 0}, penDown: true, colour: '#000000'}
     ]);
   });
 
@@ -25,10 +25,10 @@ describe('Routine', () => {
     let journey = LogoJS.execute('routine basic first second third startroutine forward first forward second forward third endroutine basic 1 2 3');
 
     compareJourneys(journey, [
-      {position: {x: 0, y: 0, angle: 0}, penDown: true},
-      {position: {x: 0, y: 1, angle: 0}, penDown: true},
-      {position: {x: 0, y: 3, angle: 0}, penDown: true},
-      {position: {x: 0, y: 6, angle: 0}, penDown: true}
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 1, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 3, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 6, angle: 0}, penDown: true, colour: '#000000'}
     ]);
   });
 
@@ -36,8 +36,8 @@ describe('Routine', () => {
     let journey = LogoJS.execute('routine nested startroutine forward 1 endroutine routine callnested startroutine nested endroutine nested');
 
     compareJourneys(journey, [
-      {position: {x: 0, y: 0, angle: 0}, penDown: true},
-      {position: {x: 0, y: 1, angle: 0}, penDown: true}
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 1, angle: 0}, penDown: true, colour: '#000000'}
     ]);
   });
 
@@ -48,8 +48,8 @@ describe('Routine', () => {
     );
 
     compareJourneys(journey, [
-      {position: {x: 0, y: 0, angle: 0}, penDown: true},
-      {position: {x: 0, y: 1, angle: 0}, penDown: true}
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 1, angle: 0}, penDown: true, colour: '#000000'}
     ]);
   });
 

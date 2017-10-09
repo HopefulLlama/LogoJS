@@ -45,8 +45,8 @@ describe('Movement', () => {
       let journey = LogoJS.execute(testCase.command);
       
       compareJourneys(journey, [
-        {position: {x: 0, y: 0, angle: 0}, penDown: true},
-        {position: testCase.position, penDown: true}
+        {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+        {position: testCase.position, penDown: true, colour: '#000000'}
       ]);
     });
   });

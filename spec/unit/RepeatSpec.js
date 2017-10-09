@@ -18,7 +18,7 @@ describe('Repeat', () => {
       let expectedJourney = [];
 
       for(let i = 0; i <= testCase.iterations; i++) {
-        expectedJourney.push({position: {x: 0, y: i, angle: 0}, penDown: true});
+        expectedJourney.push({position: {x: 0, y: i, angle: 0}, penDown: true, colour: '#000000'});
       }
 
       compareJourneys(journey, expectedJourney);
