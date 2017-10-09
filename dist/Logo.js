@@ -355,11 +355,21 @@ exports.default = {
         }
     }),
     NOT_KEYWORD: new Parameter_1.default(function (parameter) {
-        if (/^[a-z].*/.test(parameter) && Object.values(Keywords_1.default).indexOf(parameter) === -1) {
+        var startsWithLetter = new RegExp(/^[a-z].*/);
+        if (startsWithLetter.test(parameter) && Object.values(Keywords_1.default).indexOf(parameter) === -1) {
             return parameter;
         }
         else {
             throw new Error(expectationMessage('non-reserved word', "reserved word: " + parameter));
+        }
+    }),
+    HEXADECIMAL: new Parameter_1.default(function (parameter) {
+        var sixDigitHexadecimal = new RegExp(/^#[0-9a-f]{6}$/);
+        if (sixDigitHexadecimal.test(parameter)) {
+            return parameter;
+        }
+        else {
+            throw new Error(expectationMessage('six digit hexadecimal colour (prefixed with "#")', parameter));
         }
     })
 };
@@ -582,6 +592,10 @@ registry.setItem('right', new Instruction_1.default([ParameterMap_1.default.FINI
 }));
 registry.setItem('pen', new Instruction_1.default([ParameterMap_1.default.UP_DOWN], function (pen) {
     Turtle_1.default.penDown = (pen === 'down');
+    return Turtle_1.default.getCopy();
+}));
+registry.setItem('colour', new Instruction_1.default([ParameterMap_1.default.HEXADECIMAL], function (colour) {
+    Turtle_1.default.colour = colour;
     return Turtle_1.default.getCopy();
 }));
 exports.default = registry;

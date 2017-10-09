@@ -17,7 +17,7 @@ describe('Colour', () => {
   });
 
   it('should keep the colour until it changes', () => {
-    let journey = LogoJS.execute(`forward 1 colour ${WHITE} forward 1 forward 1 ${BLACK} forward 1`);
+    let journey = LogoJS.execute(`forward 1 colour ${WHITE} forward 1 forward 1 colour ${BLACK} forward 1`);
 
     compareJourneys(journey, [
       {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: BLACK},
@@ -33,8 +33,8 @@ describe('Colour', () => {
   ['dab', '5', 'ffffff', '#gggggg', '#fffff', '#fffffff'].forEach((parameter) => {
     it(`should error when given ${parameter}`, () => {
       expect(() => {
-        LogoJS.execute(`colour ${keyword}`);
-      }).toThrowError(`Expected six digit hexadecimal colour (prefixed with "#"), but got ${keyword}`);
+        LogoJS.execute(`colour ${parameter}`);
+      }).toThrowError(`Expected six digit hexadecimal colour (prefixed with "#"), but got ${parameter}`);
     });
   });
 });

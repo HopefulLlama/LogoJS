@@ -30,10 +30,19 @@ export default {
     }
   }),
   NOT_KEYWORD: new Parameter((parameter: string): string => {
-    if(/^[a-z].*/.test(parameter) && Object.values(Keywords).indexOf(parameter) === -1) {
+    let startsWithLetter = new RegExp(/^[a-z].*/);
+    if(startsWithLetter.test(parameter) && Object.values(Keywords).indexOf(parameter) === -1) {
       return parameter;
     } else {
       throw new Error(expectationMessage('non-reserved word', `reserved word: ${parameter}`));
+    }
+  }),
+  HEXADECIMAL: new Parameter((parameter: string): string => {
+    let sixDigitHexadecimal = new RegExp(/^#[0-9a-f]{6}$/);
+    if(sixDigitHexadecimal.test(parameter)) {
+      return parameter;
+    } else {
+      throw new Error(expectationMessage('six digit hexadecimal colour (prefixed with "#")', parameter));
     }
   })
 };

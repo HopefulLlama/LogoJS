@@ -26,4 +26,9 @@ registry.setItem('pen', new Instruction([ParameterMap.UP_DOWN], (pen: string): O
   return Turtle.getCopy();
 }));
 
+registry.setItem('colour', new Instruction([ParameterMap.HEXADECIMAL], (colour: string): Object => {
+  Turtle.colour = colour;
+  return Turtle.getCopy();
+}));
+
 export default registry;
