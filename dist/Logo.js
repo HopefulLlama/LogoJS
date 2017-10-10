@@ -716,7 +716,8 @@ exports.default = new Registry_1.default();
 
 Object.defineProperty(exports, "__esModule", { value: true });
 function tokenize(input) {
-    return input.split("\n").join(" ").split(" ");
+    var keepNonWhitespace = new RegExp(/\S+/, 'g');
+    return input.match(keepNonWhitespace) || [];
 }
 exports.default = { tokenize: tokenize };
 

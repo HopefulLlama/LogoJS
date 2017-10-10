@@ -1,5 +1,6 @@
 function tokenize(input: string): string[] {
-  return input.split("\n").join(" ").split(" ");
+	let keepNonWhitespace: RegExp = new RegExp(/\S+/, 'g');
+	return input.match(keepNonWhitespace) || [];
 }
 
 export default {tokenize};
