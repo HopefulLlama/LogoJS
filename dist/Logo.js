@@ -73,8 +73,8 @@ var LogoJS =
 Object.defineProperty(exports, "__esModule", { value: true });
 var ExecutionStack_1 = __webpack_require__(1);
 var ParseState_1 = __webpack_require__(2);
-var Tokenizer_1 = __webpack_require__(20);
-var MasterRegistry_1 = __webpack_require__(6);
+var Tokenizer_1 = __webpack_require__(21);
+var MasterRegistry_1 = __webpack_require__(7);
 var ParameterValueMap_1 = __webpack_require__(11);
 var currentState = ParseState_1.default.EXECUTING_COMMANDS;
 function generateExecutions(tokens, parameterValueMap) {
@@ -151,12 +151,13 @@ exports.default = new ExecutionStack();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var MasterRegistry_1 = __webpack_require__(6);
-var RoutineGenerator_1 = __webpack_require__(10);
-var Keywords_1 = __webpack_require__(8);
 var ExecutionStack_1 = __webpack_require__(1);
+var Keywords_1 = __webpack_require__(6);
+var MasterRegistry_1 = __webpack_require__(7);
 var Parser_1 = __webpack_require__(0);
 var ParseState_1 = __webpack_require__(2);
+var RoutineGenerator_1 = __webpack_require__(10);
+var RoutineStack_1 = __webpack_require__(20);
 function getControlExecution(control, tokens, parameterValueMap) {
     var parameters = parameterValueMap.substituteParameters(tokens.splice(0, control.parameterSchema.length));
     return control.createExecution(parameters);
@@ -166,9 +167,11 @@ function getInstructionExecution(command, tokens, parameterValueMap) {
     return command.createExecution(parameters);
 }
 function getRoutineExecution(routine, tokens, parameterValueMap) {
+    RoutineStack_1.default.push(routine.name);
     var parameters = tokens.splice(0, routine.parameters.length);
     var newParameterValueMap = routine.createParameterValueMap(parameters);
     Parser_1.default.generateExecutions(routine.getBody(), newParameterValueMap);
+    RoutineStack_1.default.pop();
 }
 exports.default = {
     EXECUTING_COMMANDS: function (word, tokens, parameterValueMap) {
@@ -301,6 +304,28 @@ exports.default = Position;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = {
+    FORWARD: 'forward',
+    BACK: 'back',
+    LEFT: 'left',
+    RIGHT: 'right',
+    ROUTINE: 'routine',
+    STARTROUTINE: 'startroutine',
+    ENDROUTINE: 'endroutine',
+    REPEAT: 'repeat',
+    ENDREPEAT: 'endrepeat',
+    UP: 'up',
+    DOWN: 'down'
+};
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var CommandRegistry_1 = __webpack_require__(14);
 var ControlRegistry_1 = __webpack_require__(17);
 var RoutineRegistry_1 = __webpack_require__(19);
@@ -316,13 +341,13 @@ exports.default = {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var Keywords_1 = __webpack_require__(8);
+var Keywords_1 = __webpack_require__(6);
 var Parameter_1 = __webpack_require__(15);
 function expectationMessage(expect, actual) {
     return "Expected " + expect + ", but got " + actual;
@@ -372,28 +397,6 @@ exports.default = {
             throw new Error(expectationMessage('six digit hexadecimal colour (prefixed with "#")', parameter));
         }
     })
-};
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = {
-    FORWARD: 'forward',
-    BACK: 'back',
-    LEFT: 'left',
-    RIGHT: 'right',
-    ROUTINE: 'routine',
-    STARTROUTINE: 'startroutine',
-    ENDROUTINE: 'endroutine',
-    REPEAT: 'repeat',
-    ENDREPEAT: 'endrepeat',
-    UP: 'up',
-    DOWN: 'down'
 };
 
 
@@ -573,7 +576,7 @@ exports.default = Repeat;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var ParameterMap_1 = __webpack_require__(7);
+var ParameterMap_1 = __webpack_require__(8);
 var Instruction_1 = __webpack_require__(9);
 var Turtle_1 = __webpack_require__(4);
 var Registry_1 = __webpack_require__(3);
@@ -640,7 +643,7 @@ exports.default = Executeable;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var ParameterMap_1 = __webpack_require__(7);
+var ParameterMap_1 = __webpack_require__(8);
 var Instruction_1 = __webpack_require__(9);
 var ParseState_1 = __webpack_require__(2);
 var Parser_1 = __webpack_require__(0);
@@ -713,6 +716,34 @@ exports.default = new Registry_1.default();
 
 /***/ }),
 /* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var RoutineStack = /** @class */ (function () {
+    function RoutineStack() {
+        this.stack = [];
+    }
+    RoutineStack.prototype.push = function (routineName) {
+        var index = this.stack.indexOf(routineName);
+        this.stack.push(routineName);
+        if (index > -1) {
+            var loop = this.stack.slice(index, this.stack.length).join(' -> ');
+            this.stack = [];
+            throw new Error("Infinite call stack detected at: " + loop);
+        }
+    };
+    RoutineStack.prototype.pop = function () {
+        this.stack.pop();
+    };
+    return RoutineStack;
+}());
+exports.default = new RoutineStack();
+
+
+/***/ }),
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

@@ -1,10 +1,11 @@
-import MasterRegistry from '../registry/MasterRegistry';
-import RoutineGenerator from '../instruction/RoutineGenerator';
-import Keywords from '../instruction/Keywords';
 import ExecutionStack from './ExecutionStack';
+import Keywords from '../instruction/Keywords';
+import MasterRegistry from '../registry/MasterRegistry';
+import ParameterValueMap from '../parameter/ParameterValueMap';
 import Parser from './Parser';
 import ParseState from './ParseState';
-import ParameterValueMap from '../parameter/ParameterValueMap';
+import RoutineGenerator from '../instruction/RoutineGenerator';
+import RoutineStack from './RoutineStack';
 
 function getControlExecution(control: any, tokens: string[], parameterValueMap: ParameterValueMap): any {
   let parameters = parameterValueMap.substituteParameters(tokens.splice(0, control.parameterSchema.length));
@@ -17,9 +18,13 @@ function getInstructionExecution(command: any, tokens: string[], parameterValueM
 }
 
 function getRoutineExecution(routine: any, tokens: string[], parameterValueMap: ParameterValueMap): any {
+	RoutineStack.push(routine.name);
+
   let parameters = tokens.splice(0, routine.parameters.length);
   let newParameterValueMap = routine.createParameterValueMap(parameters);
   Parser.generateExecutions(routine.getBody(), newParameterValueMap);
+
+  RoutineStack.pop();
 }
 
 export default {
