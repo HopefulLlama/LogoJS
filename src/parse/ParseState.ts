@@ -19,7 +19,7 @@ function getInstructionExecution(command: any, tokens: string[], parameterValueM
 function getRoutineExecution(routine: any, tokens: string[], parameterValueMap: ParameterValueMap): any {
   let parameters = tokens.splice(0, routine.parameters.length);
   let newParameterValueMap = routine.createParameterValueMap(parameters);
-  Parser.generateExecutions(routine.body, newParameterValueMap);
+  Parser.generateExecutions(routine.getBody(), newParameterValueMap);
 }
 
 export default {

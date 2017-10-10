@@ -21,4 +21,8 @@ export default class Routine {
     }
     return new ParameterValuesMap(map);
   }
+
+  getBody() {
+  	return this.body.slice();
+  }
 }

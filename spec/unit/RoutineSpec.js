@@ -21,6 +21,17 @@ describe('Routine', () => {
     ]);
   });
 
+  it('should execute a routine twice', () => {
+    let journey = LogoJS.execute('routine basic startroutine forward 1 endroutine basic basic');
+
+    compareJourneys(journey, [
+      {position: {x: 0, y: 0, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 1, angle: 0}, penDown: true, colour: '#000000'},
+      {position: {x: 0, y: 2, angle: 0}, penDown: true, colour: '#000000'}
+    ]);
+
+  });
+
   it('should execute a routine with several parameters', () => {
     let journey = LogoJS.execute('routine basic first second third startroutine forward first forward second forward third endroutine basic 1 2 3');
 

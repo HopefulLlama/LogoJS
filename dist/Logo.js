@@ -168,7 +168,7 @@ function getInstructionExecution(command, tokens, parameterValueMap) {
 function getRoutineExecution(routine, tokens, parameterValueMap) {
     var parameters = tokens.splice(0, routine.parameters.length);
     var newParameterValueMap = routine.createParameterValueMap(parameters);
-    Parser_1.default.generateExecutions(routine.body, newParameterValueMap);
+    Parser_1.default.generateExecutions(routine.getBody(), newParameterValueMap);
 }
 exports.default = {
     EXECUTING_COMMANDS: function (word, tokens, parameterValueMap) {
@@ -691,6 +691,9 @@ var Routine = /** @class */ (function () {
             }, map);
         }
         return new ParameterValueMap_1.default(map);
+    };
+    Routine.prototype.getBody = function () {
+        return this.body.slice();
     };
     return Routine;
 }());
