@@ -4,6 +4,7 @@
   "description": "Logo in the browser!",
   "main": "index.js",
   "devDependencies": {
+    "github-api": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-jshint": "^2.0.4",
     "gulp-rename": "^1.2.2",
@@ -16,14 +17,19 @@
     "karma": "^1.7.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.0",
+    "llama-rlsr": "0.0.6",
+    "llama-rlsr-keep-a-changelog": "0.0.4",
+    "llama-rlsr-npm": "0.0.2",
     "pump": "^1.0.2",
+    "simple-git": "^1.80.1",
     "ts-loader": "^2.3.7",
     "tslint": "^5.7.0",
     "typescript": "^2.5.3",
     "webpack": "^3.6.0"
   },
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "release": "node src/llama-rlsr.js llama-rlsr.config.js"
   },
   "repository": {
     "type": "git",
