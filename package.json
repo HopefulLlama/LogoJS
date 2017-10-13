@@ -5,7 +5,6 @@
   "main": "index.js",
   "devDependencies": {
     "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
     "gulp-jshint": "^2.0.4",
     "gulp-rename": "^1.2.2",
     "gulp-sequence": "^0.4.6",
