@@ -29,7 +29,7 @@
   },
   "scripts": {
     "test": "gulp test",
-    "release": "node src/llama-rlsr.js llama-rlsr.config.js"
+    "release": "node node_modules/llama-rlsr/src/llama-rlsr.js llama-rlsr.config.js"
   },
   "repository": {
     "type": "git",
