@@ -1,6 +1,6 @@
-module.exports = function(config) {
+module.exports = config =>
   config.set({
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     frameworks: ['jasmine'],
     files: [
       'spec/unit/SpecUtility.js',
@@ -8,4 +8,3 @@ module.exports = function(config) {
       'spec/unit/**/*Spec.js'
     ]
   });
-};
