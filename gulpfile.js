@@ -5,38 +5,33 @@ const gulp = require('gulp');
 const jshint = require('gulp-jshint');
 const pump = require('pump');
 const rename = require('gulp-rename');
-const sequence = require('gulp-sequence');
 const uglify = require('gulp-uglify-es').default;
 const gulpWebpack = require('gulp-webpack');
 const webpack = require('webpack');
 const tslint = require('gulp-tslint');
 
-gulp.task('default', sequence('test'));
-gulp.task('test', sequence('build', 'lint:test', 'unit-test', 'unit-test:min'));
-gulp.task('build', sequence('tslint', 'webpack', 'compress:logo-js'));
-
-gulp.task('webpack', () => {
-  return gulp.src('src/Logo.ts')
-  .pipe(gulpWebpack({
-    module: {
-      rules: [{
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
-      }]
-    },
-    resolve: {
-      extensions: [ ".tsx", ".ts", ".js" ]
-    },
-    output: {
-      filename: 'Logo.js',
-      library: 'LogoJS',
-      libraryExport: 'default',
-      path: path.resolve(__dirname, 'dist')
-    }
-  }, webpack))
-  .pipe(gulp.dest('dist/'));
-});
+gulp.task('webpack', () =>
+  gulp.src('src/Logo.ts')
+    .pipe(gulpWebpack({
+      module: {
+        rules: [{
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/
+        }]
+      },
+      resolve: {
+        extensions: [ ".tsx", ".ts", ".js" ]
+      },
+      output: {
+        filename: 'Logo.js',
+        library: 'LogoJS',
+        libraryExport: 'default',
+        path: path.resolve(__dirname, 'dist')
+      }
+    }, webpack))
+    .pipe(gulp.dest('dist/'))
+);
 
 function compress(src, dest, done) {
   pump([
@@ -47,38 +42,34 @@ function compress(src, dest, done) {
   ], done);
 }
 
-gulp.task('compress:logo-js', (done) => {
-  compress('dist/Logo.js', 'dist', done);
-});
+gulp.task('compress:logo-js', done => compress('dist/Logo.js', 'dist', done));
 
-gulp.task('tslint', () => {
-  return gulp.src("src/**/*.js")
-  .pipe(tslint({
+gulp.task('tslint', () =>
+  gulp.src("src/**/*.js")
+    .pipe(tslint({
       formatter: "verbose"
-  }))
-  .pipe(tslint.report());
-});
+    }))
+    .pipe(tslint.report())
+);
 
 function lint(src) {
   return gulp.src(src)
-  .pipe(jshint())
-  .pipe(jshint.reporter('default'))
-  .pipe(jshint.reporter('fail'));
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'))
+    .pipe(jshint.reporter('fail'));
 }
 
-gulp.task('lint:test', () => {
-  return lint(['spec/**/*.js']);
-});
+gulp.task('lint:test', () => lint(['spec/**/*.js']));
 
-function karma(config) {
-  let karma = path.join('node_modules', 'karma', 'bin', 'karma');
+function karma(done, config = '') {
+  const karma = path.join('node_modules', 'karma', 'bin', 'karma');
   childProcess.execSync(`node ${karma} start ${config} --single-run`, {stdio: [0,1,2]});
+  done();
 }
 
-gulp.task('unit-test', () => {
-  karma('');
-});
+gulp.task('unit-test', done => karma(done));
+gulp.task('unit-test:min', done => karma(done, 'karma-min.conf.js'));
 
-gulp.task('unit-test:min', () => {
-  karma('karma-min.conf.js');
-});
+gulp.task('build', gulp.series('tslint', 'webpack', 'compress:logo-js'));
+gulp.task('test', gulp.series('build', 'lint:test', 'unit-test', 'unit-test:min'));
+gulp.task('default', gulp.series('test'));
