@@ -5,7 +5,7 @@
   "main": "index.js",
   "devDependencies": {
     "github-api": "^3.0.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-jshint": "^2.0.4",
     "gulp-rename": "^1.2.2",
     "gulp-sequence": "^0.4.6",
