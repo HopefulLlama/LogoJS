@@ -15,7 +15,7 @@
     "jasmine-core": "^3.4.0",
     "jshint": "^2.9.5",
     "karma": "^4.0.1",
-    "karma-chrome-launcher": "^2.2.0",
+    "karma-chrome-launcher": "^3.0.0",
     "karma-jasmine": "^2.0.1",
     "llama-rlsr": "0.0.6",
     "llama-rlsr-keep-a-changelog": "0.0.4",
