@@ -21,7 +21,7 @@
     "llama-rlsr-keep-a-changelog": "0.0.4",
     "llama-rlsr-npm": "0.0.2",
     "pump": "^3.0.0",
-    "simple-git": "^1.80.1",
+    "simple-git": "^2.4.0",
     "ts-loader": "^5.3.3",
     "tslint": "^5.7.0",
     "typescript": "^3.4.1",
